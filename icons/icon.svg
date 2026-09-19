@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="pond" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#D8EDD4"/>
+      <stop offset="0.62" stop-color="#A9D3B2"/>
+      <stop offset="1" stop-color="#7FBFA5"/>
+    </linearGradient>
+  </defs>
+
+  <!-- pond background -->
+  <rect width="512" height="512" fill="url(#pond)"/>
+
+  <!-- gentle ripples -->
+  <path d="M 60 452 Q 158 430 256 452 T 452 452" stroke="#BFE3DC" stroke-width="10" fill="none" opacity="0.75" stroke-linecap="round"/>
+  <path d="M 96 486 Q 176 468 256 486 T 416 486" stroke="#BFE3DC" stroke-width="9" fill="none" opacity="0.55" stroke-linecap="round"/>
+
+  <!-- Chef Froggy (African dwarf frog in a chef hat) -->
+  <g transform="translate(6, 21.5) scale(2.5)">
+    <!-- feet -->
+    <ellipse cx="68" cy="170" rx="17" ry="9" fill="#7DBB6C"/>
+    <ellipse cx="132" cy="170" rx="17" ry="9" fill="#7DBB6C"/>
+    <!-- body -->
+    <ellipse cx="100" cy="124" rx="54" ry="46" fill="#8FC97E"/>
+    <!-- belly -->
+    <ellipse cx="100" cy="139" rx="35" ry="26" fill="#F4F8EA"/>
+    <!-- dwarf-frog speckles -->
+    <circle cx="58"  cy="112" r="3.5" fill="#5E9455"/>
+    <circle cx="70"  cy="97"  r="2.5" fill="#5E9455"/>
+    <circle cx="142" cy="112" r="3.5" fill="#5E9455"/>
+    <circle cx="130" cy="96"  r="2.5" fill="#5E9455"/>
+    <circle cx="100" cy="90"  r="2.5" fill="#5E9455"/>
+    <!-- eyes -->
+    <circle cx="74"  cy="82" r="16" fill="#FDFEFB"/>
+    <circle cx="126" cy="82" r="16" fill="#FDFEFB"/>
+    <circle cx="77"  cy="85" r="7.5" fill="#2E4A38"/>
+    <circle cx="123" cy="85" r="7.5" fill="#2E4A38"/>
+    <circle cx="79.5"  cy="82.5" r="2.6" fill="#ffffff"/>
+    <circle cx="125.5" cy="82.5" r="2.6" fill="#ffffff"/>
+    <!-- cheeks -->
+    <ellipse cx="57"  cy="113" rx="8" ry="5.5" fill="#F3B7A4" opacity="0.75"/>
+    <ellipse cx="143" cy="113" rx="8" ry="5.5" fill="#F3B7A4" opacity="0.75"/>
+    <!-- smile -->
+    <path d="M 76 112 Q 100 131 124 112" stroke="#3E5C46" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <!-- chef hat: puffs then band -->
+    <circle cx="80"  cy="42" r="15" fill="#FFFFFF" stroke="#DDD8C6" stroke-width="2.5"/>
+    <circle cx="120" cy="42" r="15" fill="#FFFFFF" stroke="#DDD8C6" stroke-width="2.5"/>
+    <circle cx="100" cy="36" r="17" fill="#FFFFFF" stroke="#DDD8C6" stroke-width="2.5"/>
+    <rect x="64" y="49" width="72" height="15" rx="7.5" fill="#FFFFFF" stroke="#DDD8C6" stroke-width="2.5"/>
+  </g>
+</svg>

@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Froggy Kitchen</title>
+  <meta name="description" content="Healthy meal ideas from your pantry + gentle daily nutrition tracking, with Chef Froggy.">
+  <meta name="theme-color" content="#5C9E72">
+
+  <!-- PWA / iPhone -->
+  <link rel="manifest" href="./manifest.webmanifest">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Froggy Kitchen">
+  <link rel="icon" href="./icons/icon-192.png">
+  <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+
+  <link rel="stylesheet" href="./css/styles.css">
+</head>
+<body>
+
+  <!-- Chef Froggy (African dwarf frog in a chef hat) -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="froggy" viewBox="0 0 200 200">
+      <!-- feet -->
+      <ellipse cx="68" cy="170" rx="17" ry="9" fill="#7DBB6C"/>
+      <ellipse cx="132" cy="170" rx="17" ry="9" fill="#7DBB6C"/>
+      <!-- body -->
+      <ellipse cx="100" cy="124" rx="54" ry="46" fill="#8FC97E"/>
+      <!-- belly -->
+      <ellipse cx="100" cy="139" rx="35" ry="26" fill="#F4F8EA"/>
+      <!-- dwarf-frog speckles -->
+      <circle cx="58"  cy="112" r="3.5" fill="#5E9455"/>
+      <circle cx="70"  cy="97"  r="2.5" fill="#5E9455"/>
+      <circle cx="142" cy="112" r="3.5" fill="#5E9455"/>
+      <circle cx="130" cy="96"  r="2.5" fill="#5E9455"/>
+      <circle cx="100" cy="90"  r="2.5" fill="#5E9455"/>
+      <!-- eyes -->
+      <circle cx="74"  cy="82" r="16" fill="#FDFEFB"/>
+      <circle cx="126" cy="82" r="16" fill="#FDFEFB"/>
+      <circle cx="77"  cy="85" r="7.5" fill="#2E4A38"/>
+      <circle cx="123" cy="85" r="7.5" fill="#2E4A38"/>
+      <circle cx="79.5"  cy="82.5" r="2.6" fill="#ffffff"/>
+      <circle cx="125.5" cy="82.5" r="2.6" fill="#ffffff"/>
+      <!-- cheeks -->
+      <ellipse cx="57"  cy="113" rx="8" ry="5.5" fill="#F3B7A4" opacity="0.75"/>
+      <ellipse cx="143" cy="113" rx="8" ry="5.5" fill="#F3B7A4" opacity="0.75"/>
+      <!-- smile -->
+      <path d="M 76 112 Q 100 131 124 112" stroke="#3E5C46" stroke-width="5" fill="none" stroke-linecap="round"/>
+      <!-- chef hat: puffs then band -->
+      <circle cx="80"  cy="42" r="15" fill="#FFFFFF" stroke="#DDD8C6" stroke-width="2.5"/>
+      <circle cx="120" cy="42" r="15" fill="#FFFFFF" stroke="#DDD8C6" stroke-width="2.5"/>
+      <circle cx="100" cy="36" r="17" fill="#FFFFFF" stroke="#DDD8C6" stroke-width="2.5"/>
+      <rect x="64" y="49" width="72" height="15" rx="7.5" fill="#FFFFFF" stroke="#DDD8C6" stroke-width="2.5"/>
+    </symbol>
+  </svg>
+
+  <header class="app-header">
+    <div class="brand">
+      <span class="mascot"><svg viewBox="0 0 200 200" role="img" aria-label="Chef Froggy"><use href="#froggy"/></svg></span>
+      <div class="brand-text">
+        <h1>Froggy Kitchen</h1>
+        <p id="greeting" class="tagline"></p>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+
+    <!-- ============ COOK TAB ============ -->
+    <section id="tab-cook" class="tab active">
+
+      <div class="card pantry-card">
+        <button type="button" class="pantry-toggle" id="pantryToggle" aria-expanded="false">
+          <span>🧺 Your pantry</span>
+          <span class="badge" id="pantryCount">0</span>
+          <span class="chev" id="pantryChev">▾</span>
+        </button>
+        <div id="pantryBody" class="pantry-body hidden">
+          <form id="pantryForm" autocomplete="off">
+            <input id="pantryInput" type="text" maxlength="40" placeholder="Add an ingredient… e.g. chickpeas">
+            <button type="submit" class="btn-small">Add</button>
+          </form>
+          <div id="quickAdds" class="chips"></div>
+          <ul id="pantryList" class="pantry-list"></ul>
+        </div>
+      </div>
+
+      <h2 class="section-title">Pick a cuisine</h2>
+      <div id="cuisineChips" class="chips scroll-x"></div>
+
+      <div class="card constraints-card">
+        <div class="constraint-row">
+          <label for="servingsVal">Servings</label>
+          <div class="stepper" role="group" aria-label="Servings">
+            <button type="button" id="servMinus" aria-label="Fewer servings">−</button>
+            <span id="servingsVal">2</span>
+            <button type="button" id="servPlus" aria-label="More servings">+</button>
+          </div>
+        </div>
+        <div class="constraint-row">
+          <label for="cookTime">Max cook time</label>
+          <select id="cookTime">
+            <option value="">Any</option>
+            <option value="15">15 min or less</option>
+            <option value="30">30 min or less</option>
+            <option value="45">45 min or less</option>
+            <option value="60">60 min or less</option>
+          </select>
+        </div>
+        <div class="constraint-row column">
+          <label>Dietary notes</label>
+          <div id="dietChips" class="chips"></div>
+        </div>
+        <input id="allergies" type="text" maxlength="80" placeholder="Allergies (e.g. nuts, shellfish)">
+      </div>
+
+      <button id="generateBtn" class="big-btn">🍳 Cook up ideas</button>
+      <div id="genStatus" class="status hidden"></div>
+      <div id="results"></div>
+    </section>
+
+    <!-- ============ TODAY TAB ============ -->
+    <section id="tab-today" class="tab">
+      <h2 id="todayDate" class="date-title"></h2>
+      <p id="froggySays" class="froggy-says"></p>
+      <div id="streakChip" class="streak-chip hidden"></div>
+
+      <div class="card goals-card">
+        <div class="goal-block">
+          <div class="goal-head"><span>🔥 Calories</span><span id="calText" class="goal-num"></span></div>
+          <div class="bar"><div id="calBar" class="fill cal"></div></div>
+          <p id="calSub" class="goal-sub"></p>
+        </div>
+        <div class="goal-block">
+          <div class="goal-head"><span>💪 Protein</span><span id="proText" class="goal-num"></span></div>
+          <div class="bar"><div id="proBar" class="fill pro"></div></div>
+          <p id="proSub" class="goal-sub"></p>
+        </div>
+      </div>
+
+      <div class="card water-card">
+        <div class="goal-head"><span>💧 Water</span><span id="waterText" class="goal-num"></span></div>
+        <div id="droplets" class="droplets"></div>
+      </div>
+
+      <div class="card weight-card">
+        <div class="goal-head"><span>⚖️ Weight check-in</span><span id="weightUnitLabel" class="goal-num"></span></div>
+        <form id="weightForm" autocomplete="off">
+          <input id="weightInput" type="number" inputmode="decimal" step="0.1" min="1" max="500" placeholder="Today's weight">
+          <button type="submit" class="btn-small">Log</button>
+        </form>
+        <div id="weightChart"></div>
+        <p id="weightDelta" class="goal-sub"></p>
+      </div>
+
+      <h2 class="section-title">Logged today</h2>
+      <ul id="todayLog" class="log-list"></ul>
+      <button id="quickLogBtn" type="button" class="big-btn secondary">＋ Quick log a meal</button>
+    </section>
+
+    <!-- ============ FAVORITES TAB ============ -->
+    <section id="tab-favs" class="tab">
+      <h2 class="section-title">Favorites</h2>
+      <div id="favList"></div>
+      <h2 class="section-title">Cooked recently</h2>
+      <ul id="historyList" class="log-list"></ul>
+    </section>
+
+    <!-- ============ SETTINGS TAB ============ -->
+    <section id="tab-settings" class="tab">
+      <div class="card settings-card">
+        <h2 class="section-title no-margin">AI kitchen</h2>
+        <p class="hint">Froggy uses a small AI model to plan meals. Your key is stored only on this device and sent directly to the provider you pick — nowhere else.</p>
+
+        <label for="providerSel">Provider</label>
+        <select id="providerSel"></select>
+
+        <label for="modelInput">Model</label>
+        <input id="modelInput" type="text" spellcheck="false" placeholder="">
+
+        <label for="apiKeyInput">API key</label>
+        <input id="apiKeyInput" type="password" inputmode="text" autocomplete="off" spellcheck="false" placeholder="">
+        <p class="hint" id="keyHint"></p>
+
+        <label for="proxyUrl">Optional: API base URL (for a serverless proxy)</label>
+        <input id="proxyUrl" type="url" inputmode="url" spellcheck="false" placeholder="https://api.anthropic.com">
+      </div>
+
+      <div class="card settings-card">
+        <h2 class="section-title no-margin">Daily goals</h2>
+        <div class="constraint-row">
+          <label for="calGoal">Calorie target (kcal)</label>
+          <input id="calGoal" type="number" inputmode="numeric" min="800" max="6000" step="50">
+        </div>
+        <div class="constraint-row">
+          <label for="proGoal">Protein target (g)</label>
+          <input id="proGoal" type="number" inputmode="numeric" min="20" max="300" step="5">
+        </div>
+        <div class="constraint-row">
+          <label for="waterGoal">Water goal (cups)</label>
+          <input id="waterGoal" type="number" inputmode="numeric" min="1" max="20" step="1">
+        </div>
+        <div class="constraint-row">
+          <label for="weightUnit">Weight unit</label>
+          <select id="weightUnit">
+            <option value="kg">kg</option>
+            <option value="lb">lb</option>
+          </select>
+        </div>
+      </div>
+
+      <button id="saveSettingsBtn" class="big-btn">Save settings</button>
+
+      <div class="card settings-card data-card">
+        <h2 class="section-title no-margin">Your data</h2>
+        <p class="hint">Everything lives in this browser on this phone. Nothing is uploaded.</p>
+
+        <div class="constraint-row column">
+          <label for="backupIntervalSel">Auto-backup to your Downloads folder</label>
+          <select id="backupIntervalSel">
+            <option value="0">Off (manual only)</option>
+            <option value="3600">Every hour</option>
+            <option value="21600">Every 6 hours</option>
+            <option value="86400" selected>Daily</option>
+          </select>
+        </div>
+        <p class="hint" id="backupStatus"></p>
+
+        <div class="row-gap">
+          <button id="exportBtn" type="button" class="btn-small">⬇️ Save backup now</button>
+          <button id="importBtn" type="button" class="btn-small">📂 Restore from file…</button>
+        </div>
+        <input type="file" id="importFile" accept=".json,application/json" hidden>
+        <p class="hint">Backups land in your phone’s Files app → Downloads as <code>froggy-kitchen-backup-*.json</code>. If this browser ever loses its data, tap “Restore from file” and pick one.</p>
+
+        <div class="row-gap">
+          <button id="clearBtn" type="button" class="btn-small danger">🗑️ Clear all data</button>
+        </div>
+      </div>
+
+      <p class="fineprint">Froggy Kitchen · made with 🐸 and pond water</p>
+    </section>
+  </main>
+
+  <!-- ============ BOTTOM TAB BAR ============ -->
+  <nav class="tabbar" role="tablist" aria-label="Main tabs">
+    <button type="button" class="tabbtn active" data-tab="cook" role="tab"><span class="ico">🍳</span><span>Cook</span></button>
+    <button type="button" class="tabbtn" data-tab="today" role="tab"><span class="ico">💧</span><span>Today</span></button>
+    <button type="button" class="tabbtn" data-tab="favs" role="tab"><span class="ico">❤️</span><span>Favorites</span></button>
+    <button type="button" class="tabbtn" data-tab="settings" role="tab"><span class="ico">⚙️</span><span>Settings</span></button>
+  </nav>
+
+  <!-- ============ QUICK LOG MODAL ============ -->
+  <div id="modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-card">
+      <h3 id="modalTitle">Quick log a meal</h3>
+      <p class="hint">Rough numbers are perfect — Froggy just needs a nudge.</p>
+      <form id="quickLogForm" autocomplete="off">
+        <label for="qlName">What did you eat?</label>
+        <input id="qlName" type="text" maxlength="60" placeholder="e.g. leftover pasta salad" required>
+        <div class="row-gap three">
+          <div><label for="qlCal">kcal</label><input id="qlCal" type="number" inputmode="numeric" min="0" max="5000" step="10"></div>
+          <div><label for="qlPro">protein g</label><input id="qlPro" type="number" inputmode="decimal" min="0" max="300" step="1"></div>
+          <div><label for="qlCarb">carbs g</label><input id="qlCarb" type="number" inputmode="decimal" min="0" max="500" step="1"></div>
+        </div>
+        <div class="row-gap two">
+          <div><label for="qlFat">fat g</label><input id="qlFat" type="number" inputmode="decimal" min="0" max="300" step="1"></div>
+          <button type="submit" class="btn-small primary">Log it ✓</button>
+        </div>
+      </form>
+      <button id="modalClose" type="button" class="link-btn">Cancel</button>
+    </div>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="./js/store.js"></script>
+  <script src="./js/providers.js"></script>
+  <script src="./js/app.js"></script>
+</body>
+</html>
