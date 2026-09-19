@@ -52,12 +52,15 @@ The backup format is plain JSON (`{app, version, exportedAt, data: {froggy.* key
 
 ## Install on your iPhone home screen
 
-The app must be served over **HTTPS** (or `localhost`) for PWA install to work:
+The app must be served over **HTTPS** (or `localhost`) for PWA install to work.
 
-1. Deploy the folder anywhere static — [GitHub Pages](https://pages.github.com), Netlify, Cloudflare Pages, Vercel… just upload/copy the whole `froggy-kitchen/` directory as-is.
-2. On your iPhone, open the site in **Safari**.
-3. Tap **Share** (the square-with-up-arrow icon) → **Add to Home Screen** → **Add**.
-4. The frog icon appears on your home screen; it launches full-screen like a native app and works offline for the shell (meal generation obviously needs internet).
+**It's already deployed:** <https://sbuzh.github.io/froggy-kitchen/> (GitHub Pages, repo: `sbuzh/froggy-kitchen`).
+
+1. On your iPhone, open <https://sbuzh.github.io/froggy-kitchen/> in **Safari**.
+2. Tap **Share** (the square-with-up-arrow icon) → **Add to Home Screen** → **Add**.
+3. The frog icon appears on your home screen; it launches full-screen like a native app and works offline for the shell (meal generation obviously needs internet).
+
+Want your own copy? Push this folder to any static host — GitHub Pages, Netlify, Cloudflare Pages, Vercel… all paths in the app are relative, so subpath deploys work as-is.
 
 ## Project layout
 

@@ -32,13 +32,19 @@ Persona: **Chef Froggy**, a tiny unbothered African dwarf frog in a chef hat. St
 ### Docs
 - `README.md` — run instructions, API key location (Settings tab), iPhone home-screen install steps, project layout.
 
+## Deployment
+
+- **Live:** <https://sbuzh.github.io/froggy-kitchen/> — GitHub Pages from branch `main` of the public repo `sbuzh/froggy-kitchen` (legacy build, path `/`). Push to `main` = auto-redeploy.
+- Private Pages was not possible on this account's plan (API 422: "plan does not support GitHub Pages for this repository" — private-repo Pages needs a paid plan), so the repo is public. The code contains no secrets; API keys live only in each browser's localStorage, entered via Settings.
+- Verified post-deploy: all assets 200, manifest served as `application/manifest+json`, service worker activates on the live origin, zero page/console errors (puppeteer smoke test against the deployed URL).
+
 ## How to run
 
 ```bash
 cd froggy-kitchen && python3 -m http.server 8080   # open http://localhost:8080
 ```
 
-Add an API key in the app's **Settings** tab (Anthropic / Gemini / Groq). For iPhone install, deploy over HTTPS (GitHub Pages/Netlify/etc.) → Safari Share → Add to Home Screen. See `README.md`.
+Add an API key in the app's **Settings** tab (Anthropic / Gemini / Groq). For iPhone install, open <https://sbuzh.github.io/froggy-kitchen/> in Safari → Share → Add to Home Screen. See `README.md`.
 
 ## Known limitations / open items
 
