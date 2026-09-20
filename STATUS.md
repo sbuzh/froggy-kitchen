@@ -1,6 +1,6 @@
 # Froggy Kitchen — Status
 
-_Last updated: 2026-09-19_
+_Last updated: 2026-09-20_
 
 ## What is being built
 
@@ -9,13 +9,14 @@ _Last updated: 2026-09-19_
 1. Suggests healthy meals from the user's pantry ingredients via an LLM — with cuisine / servings / max cook time / dietary notes / allergy constraints.
 2. Tracks daily nutrition gently: calories & protein vs. goals, water droplets, weight trend, streaks, meal history and favorites.
 
-Persona: **Chef Froggy**, a tiny unbothered African dwarf frog in a chef hat. Strictly health-positive language (no diet-shaming; indulgent meals are honestly flagged, never hidden). All data lives in `localStorage` on-device — no accounts, no backend by default. The LLM interface is swappable: Anthropic Claude Haiku 4.5 (default), Gemini, Groq — chosen and keyed in the app's Settings tab.
+Persona: **Chef Froggy**, a tiny unbothered African dwarf frog in a chef hat. Strictly health-positive language (no diet-shaming; indulgent meals are honestly flagged, never hidden). All data lives in `localStorage` on-device — no accounts, no backend by default. The LLM interface is swappable: LM Studio running locally on your machine (no key, models discovered live from `/v1/models`), or cloud providers — Anthropic Claude Haiku 4.5 (default), Gemini, Groq — chosen and keyed in the app's Settings tab.
 
 ## Current status: ✅ Built & QA-verified
 
 ### App
 - Complete single-page PWA at this folder (`index.html`, `css/`, `js/{store,providers,app}.js`, `manifest.webmanifest`, `sw.js`, `icons/`).
 - Four tabs: **Cook** (pantry + constraints + meal generation), **Today** (calories/protein/water/weight/streak/log), **Favorites** (+ history), **Settings** (provider, API key, goals).
+- **Local inference (LM Studio):** Settings offers an LM Studio provider — server URL field (default `http://localhost:1234`), model dropdown populated live from the server's `/v1/models` with a 🔄 Refresh button, no API key required (optional token supported if LM Studio auth is on). Talks OpenAI-compatible chat completions; friendly errors when the server is down or CORS isn't enabled.
 - **Backups**: one-tap JSON backup of all data to the phone's Downloads folder (`froggy-kitchen-backup-YYYYMMDD-HHMMSS.json`), configurable auto-backup interval (off / 1 h / 6 h / daily, default daily) with on-launch + per-minute checks while open, and restore-from-file behind a confirm dialog.
 - PWA-ready for iPhone: manifest, icons (192/512/apple-touch), service worker caching the app shell only (never API calls), `viewport-fit=cover`, full-screen launch.
 - Honest match score: model returns `usedIngredients`; the app re-checks against the real pantry and computes "Uses X of your Y" client-side, so badges can never overstate what's in the kitchen.
@@ -27,6 +28,7 @@ Persona: **Chef Froggy**, a tiny unbothered African dwarf frog in a chef hat. St
   - Gen 1 (9-item pantry, Mexican, vegetarian, peanut allergy, 3 servings, ≤45 min): **4 meals rendered in 356 s**; model correctly excluded "Chicken breast" due to the vegetarian note.
   - Gen 2 (empty pantry): shopping-list badges, 126 s; `usedIngredients: []` as specified.
   - Match badges verified honest against the subagent's raw output files; request payload verified field-by-field; no console/page errors.
+- **LM Studio local E2E (real server, 2026-09-20):** 17/17 functional checks against a live LM Studio instance on `:8080` — provider UI toggles correctly; dead default URL (`:1234`) shows friendly error; **live model discovery** listed all 8 models from `/v1/models`; settings persisted with no API key; **real meal generation via Qwen3.8-27B** (3 meals in 138 s) rendered with honest match badges (“Uses 2 of your 2”); request verified hitting `:8080/v1/chat/completions`; zero page errors. Evidence: `/tmp/froggy-lm-qa/` (`qa.js`, `shots/live-results.png`).
 - Evidence: screenshots in `/tmp/froggy-qa/subagent/shots/live-*.png`, logs in `/tmp/froggy-qa/qa-live.out` and `/tmp/froggy-qa/llm-proxy/proxy.log`.
 
 ### Docs

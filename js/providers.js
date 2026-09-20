@@ -7,6 +7,14 @@
 const FroggyProviders = (() => {
   const PROVIDERS = [
     {
+      id: 'lmstudio',
+      label: 'LM Studio · Local (free & private)',
+      defaultModel: '', // discovered live from the server's /v1/models — no fixed default
+      keyPlaceholder: 'only needed if LM Studio auth is on',
+      hint: 'Runs entirely on your machine. In LM Studio: Developer tab → start the server, and switch ON “Enable CORS” in its Settings. Then pick a model below (Refresh re-checks what’s available).',
+      local: true,
+    },
+    {
       id: 'anthropic',
       label: 'Claude · Anthropic (recommended)',
       defaultModel: 'claude-haiku-4-5',
@@ -139,6 +147,44 @@ const FroggyProviders = (() => {
     return text;
   }
 
+  /* Local inference (LM Studio) — OpenAI-compatible server on the user's machine */
+
+  function localBase(settings) {
+    return (String((settings && settings.serverUrl) || 'http://localhost:1234').trim() || 'http://localhost:1234').replace(/\/+$/, '');
+  }
+
+  /** Live list of the models LM Studio has available right now. */
+  async function listLocalModels(settings) {
+    const res = await fetch(localBase(settings) + '/v1/models', { headers: { accept: 'application/json' } });
+    if (!res.ok) throw new Error(await friendlyHttpError(res));
+    const data = await res.json();
+    return (Array.isArray(data.data) ? data.data : [])
+      .map((m) => String(m && m.id || '').trim())
+      .filter(Boolean);
+  }
+
+  async function callLocal(settings, req) {
+    const headers = { 'content-type': 'application/json' };
+    if (settings.apiKey) headers.Authorization = `Bearer ${settings.apiKey}`; // only when LM Studio auth is on
+    const res = await fetch(localBase(settings) + '/v1/chat/completions', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({
+        model: settings.model,
+        temperature: 0.7,
+        messages: [
+          { role: 'system', content: SYSTEM },
+          { role: 'user', content: buildUserMessage(req) },
+        ],
+      }),
+    });
+    if (!res.ok) throw new Error(await friendlyHttpError(res));
+    const data = await res.json();
+    const text = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
+    if (!text) throw new Error('The model returned no text. Try again.');
+    return text;
+  }
+
   async function friendlyHttpError(res) {
     let detail = '';
     try {
@@ -211,22 +257,31 @@ const FroggyProviders = (() => {
   /* ---------------- public API ---------------- */
 
   async function generateMeals(settings, req) {
+    const prov = providerById(settings.provider);
     const key = String(settings.apiKey || '').trim();
-    if (!key) {
+    if (!key && !prov.local) {
       const err = new Error('no-key');
       err.code = 'NO_KEY';
       throw err;
     }
-    const model = String(settings.model || '').trim() || (PROVIDERS.find((p) => p.id === settings.provider) || {}).defaultModel;
+    let model = String(settings.model || '').trim() || prov.defaultModel;
+    if (prov.local && !model) {
+      const err = new Error('Pick a model from the LM Studio list in Settings first.');
+      err.code = 'NO_MODEL';
+      throw err;
+    }
     const s = { ...settings, apiKey: key, model };
 
     let text;
     try {
       if (s.provider === 'gemini') text = await callGemini(s, req);
       else if (s.provider === 'groq') text = await callGroq(s, req);
+      else if (prov.local) text = await callLocal(s, req);
       else text = await callAnthropic(s, req); // default
     } catch (err) {
-      if (err instanceof TypeError) throw new Error('Could not reach the provider. Check your internet connection — or the API base URL in Settings.');
+      if (err instanceof TypeError) throw new Error(prov.local
+        ? `Could not reach LM Studio at ${localBase(settings)}. Start the server in LM Studio and make sure “Enable CORS” is switched on.`
+        : 'Could not reach the provider. Check your internet connection — or the API base URL in Settings.');
       throw err;
     }
 
@@ -237,5 +292,5 @@ const FroggyProviders = (() => {
     return PROVIDERS.find((p) => p.id === id) || PROVIDERS[0];
   }
 
-  return { PROVIDERS, generateMeals, providerById };
+  return { PROVIDERS, generateMeals, providerById, listLocalModels };
 })();

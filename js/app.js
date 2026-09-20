@@ -172,9 +172,15 @@
     const status = $('#genStatus');
     const results = $('#results');
 
-    if (!state.settings.apiKey) {
+    const prov = FroggyProviders.providerById(state.settings.provider);
+    if (!prov.local && !state.settings.apiKey) {
       setTab('settings');
       toast('Add your API key in Settings first 🐸');
+      return;
+    }
+    if (prov.local && !state.settings.model) {
+      setTab('settings');
+      toast('Pick a model from the LM Studio list in Settings 🐸');
       return;
     }
 
@@ -196,6 +202,9 @@
       if (err && err.code === 'NO_KEY') {
         setTab('settings');
         toast('Add your API key in Settings first 🐸');
+      } else if (err && err.code === 'NO_MODEL') {
+        setTab('settings');
+        toast('Pick a model from the LM Studio list in Settings 🐸');
       } else {
         results.innerHTML = `
           <div class="card">
@@ -457,13 +466,8 @@
     sel.innerHTML = FroggyProviders.PROVIDERS.map((p) => `<option value="${p.id}">${esc(p.label)}</option>`).join('');
     sel.value = state.settings.provider || 'anthropic';
 
-    const prov = FroggyProviders.providerById(sel.value);
-    $('#modelInput').value = state.settings.model && state.settings.model !== prov.defaultModel ? state.settings.model : prov.defaultModel;
-    $('#modelInput').placeholder = prov.defaultModel;
+    applyProviderUI(sel.value);
     $('#apiKeyInput').value = state.settings.apiKey || '';
-    $('#apiKeyInput').placeholder = prov.keyPlaceholder;
-    $('#keyHint').textContent = prov.hint;
-    $('#proxyUrl').value = state.settings.proxyUrl || (sel.value === 'anthropic' ? 'https://api.anthropic.com' : '');
 
     $('#calGoal').value = state.goals.calories ?? DEFAULTS.goals.calories;
     $('#proGoal').value = state.goals.proteinG ?? DEFAULTS.goals.proteinG;
@@ -474,14 +478,61 @@
     renderBackupStatus();
   }
 
+  /** Show/hide + prefill the settings fields that depend on the chosen provider. */
+  function applyProviderUI(provId) {
+    const prov = FroggyProviders.providerById(provId);
+    const isLocal = !!prov.local;
+
+    $('#localFields').classList.toggle('hidden', !isLocal);
+    $('#proxyFields').classList.toggle('hidden', isLocal);
+    $('#modelSelect').classList.toggle('hidden', !isLocal);
+    $('#modelInput').classList.toggle('hidden', isLocal);
+
+    if (isLocal) {
+      $('#serverUrl').value = state.settings.serverUrl || 'http://localhost:1234';
+      $('#apiKeyInput').placeholder = prov.keyPlaceholder;
+      $('#keyHint').textContent = prov.hint;
+      refreshLocalModels(); // live list of what LM Studio has right now
+    } else {
+      const modelVal = state.settings.model && state.settings.model !== prov.defaultModel ? state.settings.model : prov.defaultModel;
+      $('#modelInput').value = modelVal;
+      $('#modelInput').placeholder = prov.defaultModel;
+      $('#apiKeyInput').placeholder = prov.keyPlaceholder;
+      $('#keyHint').textContent = prov.hint;
+      $('#proxyUrl').value = state.settings.proxyUrl || (provId === 'anthropic' ? 'https://api.anthropic.com' : '');
+    }
+  }
+
+  /** Ask the local server which models are available right now. */
+  async function refreshLocalModels() {
+    const sel = $('#modelSelect');
+    const statusEl = $('#modelStatus');
+    if (!sel || !statusEl) return;
+    const url = ($('#serverUrl').value.trim()) || 'http://localhost:1234';
+    statusEl.textContent = 'Checking LM Studio…';
+    sel.innerHTML = '<option value="">— checking —</option>';
+    try {
+      const models = await FroggyProviders.listLocalModels({ serverUrl: url });
+      if (!models.length) throw new Error('no models');
+      sel.innerHTML = models.map((m) => `<option value="${esc(m)}">${esc(m)}</option>`).join('');
+      if (state.settings.model && models.includes(state.settings.model)) sel.value = state.settings.model;
+      statusEl.textContent = `${models.length} model${models.length === 1 ? '' : 's'} available right now 🐸`;
+    } catch (err) {
+      sel.innerHTML = '<option value="">— no models found —</option>';
+      statusEl.textContent = `Couldn't reach LM Studio at ${esc(url)}. Start the server in LM Studio (Developer tab), switch on “Enable CORS” in its settings, then tap Refresh.`;
+    }
+  }
+
   function saveSettings() {
     const provId = $('#providerSel').value;
-    const modelVal = $('#modelInput').value.trim();
     const prov = FroggyProviders.providerById(provId);
+    const isLocal = !!prov.local;
+    const modelVal = (isLocal ? $('#modelSelect') : $('#modelInput')).value.trim();
     state.settings = {
       provider: provId,
       model: modelVal || prov.defaultModel,
       apiKey: $('#apiKeyInput').value.trim(),
+      serverUrl: isLocal ? ($('#serverUrl').value.trim() || 'http://localhost:1234') : (state.settings.serverUrl || ''),
       proxyUrl: provId === 'anthropic' ? ($('#proxyUrl').value.trim() || 'https://api.anthropic.com') : '',
       backupInterval: Number($('#backupIntervalSel').value) || 0,
     };
@@ -662,13 +713,8 @@
     });
 
     // settings
-    $('#providerSel').addEventListener('change', () => {
-      const prov = FroggyProviders.providerById($('#providerSel').value);
-      $('#modelInput').value = '';
-      $('#modelInput').placeholder = prov.defaultModel;
-      $('#apiKeyInput').placeholder = prov.keyPlaceholder;
-      $('#keyHint').textContent = prov.hint;
-    });
+    $('#providerSel').addEventListener('change', () => applyProviderUI($('#providerSel').value));
+    $('#refreshModelsBtn').addEventListener('click', () => refreshLocalModels());
     $('#saveSettingsBtn').addEventListener('click', saveSettings);
     $('#exportBtn').addEventListener('click', () => triggerBackup(false));
 

@@ -32,10 +32,23 @@ Or just double-click `index.html` — the app also runs from `file://`, though a
 
 1. Open **Settings**.
 2. Pick a provider:
+   - **LM Studio · Local** — free & private, runs on your own machine, no API key (see below).
    - **Claude · Anthropic** (default, model `claude-haiku-4-5`) — key from <https://console.anthropic.com>. Haiku 4.5 is $1 / $5 per M tokens; casual use costs well under ~$2/month.
    - **Gemini · Google AI Studio** (`gemini-2.5-flash`) — free-tier key from <https://aistudio.google.com>, no credit card needed.
    - **Groq** (`llama-3.3-70b-versatile`) — free-tier key from <https://console.groq.com>.
-3. Paste your API key, hit **Save**. The key is stored only in this browser's `localStorage` and sent only to the provider you selected (Anthropic calls include the `anthropic-dangerous-direct-browser-access: true` header so they work straight from a browser).
+3. Paste your API key (not needed for local), hit **Save**. The key is stored only in this browser's `localStorage` and sent only to the provider you selected (Anthropic calls include the `anthropic-dangerous-direct-browser-access: true` header so they work straight from a browser).
+
+### Local inference with LM Studio (free & private)
+
+Pick **LM Studio · Local** in Settings — no API key, nothing leaves your machine.
+
+1. In LM Studio: **Developer tab → start the server**, and switch on **“Enable CORS”** under its Settings (required for browser access).
+2. Back in Froggy Kitchen: set the **server URL** (default `http://localhost:1234` — change it if your server runs on another port), tap **🔄 Refresh models**. The model dropdown fills with whatever LM Studio has available *right now*.
+3. Pick a model, hit **Save**, and cook.
+
+Notes:
+- Use the app from the same machine (e.g. `python3 -m http.server` or opening `index.html` directly). Some browsers — notably Chrome — block calls to `localhost`/LAN addresses when the page itself is served from a public HTTPS site, so the GitHub Pages copy may not reach your local server.
+- If you enable “Require Authentication” in LM Studio, paste its token into the API key field — it’s sent only to your own server.
 
 > Tip for testing without spending tokens: point the **API base URL** field (visible under the Anthropic option) at any local proxy that speaks the Anthropic `/v1/messages` shape, and use any non-empty key. That's exactly how this project's QA runs its "local LLM" mode.
 

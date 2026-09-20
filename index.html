@@ -177,15 +177,28 @@
         <label for="providerSel">Provider</label>
         <select id="providerSel"></select>
 
+        <!-- Local (LM Studio) fields -->
+        <div id="localFields" class="hidden">
+          <label for="serverUrl">LM Studio server URL</label>
+          <input id="serverUrl" type="url" inputmode="url" spellcheck="false" placeholder="http://localhost:1234">
+          <div class="row-gap">
+            <button id="refreshModelsBtn" type="button" class="btn-small">🔄 Refresh models</button>
+          </div>
+          <p class="hint" id="modelStatus"></p>
+        </div>
+
         <label for="modelInput">Model</label>
+        <select id="modelSelect" class="hidden"></select>
         <input id="modelInput" type="text" spellcheck="false" placeholder="">
 
         <label for="apiKeyInput">API key</label>
         <input id="apiKeyInput" type="password" inputmode="text" autocomplete="off" spellcheck="false" placeholder="">
         <p class="hint" id="keyHint"></p>
 
-        <label for="proxyUrl">Optional: API base URL (for a serverless proxy)</label>
-        <input id="proxyUrl" type="url" inputmode="url" spellcheck="false" placeholder="https://api.anthropic.com">
+        <div id="proxyFields">
+          <label for="proxyUrl">Optional: API base URL (for a serverless proxy)</label>
+          <input id="proxyUrl" type="url" inputmode="url" spellcheck="false" placeholder="https://api.anthropic.com">
+        </div>
       </div>
 
       <div class="card settings-card">
