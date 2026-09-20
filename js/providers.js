@@ -72,11 +72,22 @@ const FroggyProviders = (() => {
       dietaryNotes: req.dietaryNotes, // e.g. ["vegetarian", "high-protein"]
       allergies: req.allergies || '',
     };
-    return (
+    let msg =
       'Plan meals now.\n' +
       JSON.stringify(payload) +
-      '\nCuisine note: if cuisine is "surprise", pick a different fun cuisine for each meal. Return the JSON only.'
-    );
+      '\nCuisine note: if cuisine is "surprise", pick a different fun cuisine for each meal. Return the JSON only.';
+
+    // Ground the model's nutrition estimates in verified per-100 g facts (OpenNutrition database).
+    if (typeof FroggyFoodDB !== 'undefined') {
+      const facts = FroggyFoodDB.factsFor(req.pantry || []);
+      if (facts.length) {
+        msg +=
+          '\nVerified nutrition per 100 g for your pantry items (OpenNutrition database):\n' +
+          facts.map((f) => `- ${f.name}: ${f.c} kcal, protein ${f.p} g, carbs ${f.k} g, fat ${f.f} g`).join('\n') +
+          '\nUse these values to compute honest nutritionPerServing estimates — never leave calories/protein/fat blank or zero for a meal that contains them.';
+      }
+    }
+    return msg;
   }
 
   /* ---------------- provider calls ---------------- */
@@ -230,6 +241,28 @@ const FroggyProviders = (() => {
       const n = (m.nutritionPerServing && typeof m.nutritionPerServing === 'object') ? m.nutritionPerServing : {};
       // honest match score: only count pantry names the model actually listed
       const used = strArr(m.usedIngredients).filter((s) => pantrySet.has(s.toLowerCase()));
+
+      let cal = Math.round(num(n.calories));
+      let pro = Math.round(num(n.proteinG) * 10) / 10;
+      let carb = Math.round(num(n.carbsG) * 10) / 10;
+      let fat = Math.round(num(n.fatG) * 10) / 10;
+
+      // If the model returned no nutrition at all, estimate it from the ingredient database
+      // (clearly marked as estimated on the card). Rough assumption: ~125 g of the meal's
+      // pantry ingredients per serving, split evenly across them.
+      let nutritionEstimated = false;
+      if (!cal && !pro && !carb && !fat) {
+        const facts = used.map((u) => FroggyFoodDB.lookup(u)).filter(Boolean);
+        if (facts.length) {
+          const gramsEach = 125 / facts.length;
+          cal = Math.round(facts.reduce((a, f) => a + (f.c * gramsEach) / 100, 0));
+          pro = Math.round(facts.reduce((a, f) => a + (f.p * gramsEach) / 100, 0) * 10) / 10;
+          carb = Math.round(facts.reduce((a, f) => a + (f.k * gramsEach) / 100, 0) * 10) / 10;
+          fat = Math.round(facts.reduce((a, f) => a + (f.f * gramsEach) / 100, 0) * 10) / 10;
+          nutritionEstimated = true;
+        }
+      }
+
       return {
         id: FroggyStore.uid(),
         name: String(m.name).trim().slice(0, 90),
@@ -239,12 +272,8 @@ const FroggyProviders = (() => {
         steps: strArr(m.steps).slice(0, 12),
         cookTimeMin: num(m.cookTimeMin),
         servings: Math.min(12, Math.max(1, Math.round(num(m.servings, req.servings || 2)) || (req.servings || 2))),
-        nutritionPerServing: {
-          calories: Math.round(num(n.calories)),
-          proteinG: Math.round(num(n.proteinG) * 10) / 10,
-          carbsG: Math.round(num(n.carbsG) * 10) / 10,
-          fatG: Math.round(num(n.fatG) * 10) / 10,
-        },
+        nutritionPerServing: { calories: cal, proteinG: pro, carbsG: carb, fatG: fat },
+        nutritionEstimated,
         healthNote: String(m.healthNote || '').trim().slice(0, 240),
         indulgent: m.indulgent === true,
       };

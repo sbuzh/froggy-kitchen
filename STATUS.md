@@ -17,6 +17,7 @@ Persona: **Chef Froggy**, a tiny unbothered African dwarf frog in a chef hat. St
 - Complete single-page PWA at this folder (`index.html`, `css/`, `js/{store,providers,app}.js`, `manifest.webmanifest`, `sw.js`, `icons/`).
 - Four tabs: **Cook** (pantry + constraints + meal generation), **Today** (calories/protein/water/weight/streak/log), **Favorites** (+ history), **Settings** (provider, API key, goals).
 - **Local inference (LM Studio):** Settings offers an LM Studio provider — server URL field (default `http://localhost:1234`), model dropdown populated live from the server's `/v1/models` with a 🔄 Refresh button, no API key required (optional token supported if LM Studio auth is on). Talks OpenAI-compatible chat completions; friendly errors when the server is down or CORS isn't enabled.
+- **Nutrition database (OpenNutrition):** `js/fooddb.js` bundles 9,107 curated everyday/prepared foods (~250 KB) from the open-source [OpenNutrition](https://www.opennutrition.app) export (ODbL/DbCL, attribution shown in-app). Two layers: (1) verified per-100 g facts for the user's actual pantry items are injected into every meal-planning prompt so model nutrition estimates are grounded; (2) if a model returns no nutrition at all, the app computes an estimate from the DB (~125 g of the meal's pantry ingredients per serving) and marks the card **≈ “nutrition estimated from ingredient database”**. Matcher: alias table for staples → exact match → whole-word token containment (blocks substring false positives like rice→licorice; generic terms like “spices” are blocked).
 - **Backups**: one-tap JSON backup of all data to the phone's Downloads folder (`froggy-kitchen-backup-YYYYMMDD-HHMMSS.json`), configurable auto-backup interval (off / 1 h / 6 h / daily, default daily) with on-launch + per-minute checks while open, and restore-from-file behind a confirm dialog.
 - PWA-ready for iPhone: manifest, icons (192/512/apple-touch), service worker caching the app shell only (never API calls), `viewport-fit=cover`, full-screen launch.
 - Honest match score: model returns `usedIngredients`; the app re-checks against the real pantry and computes "Uses X of your Y" client-side, so badges can never overstate what's in the kitchen.
@@ -29,6 +30,8 @@ Persona: **Chef Froggy**, a tiny unbothered African dwarf frog in a chef hat. St
   - Gen 2 (empty pantry): shopping-list badges, 126 s; `usedIngredients: []` as specified.
   - Match badges verified honest against the subagent's raw output files; request payload verified field-by-field; no console/page errors.
 - **LM Studio local E2E (real server, 2026-09-20):** 17/17 functional checks against a live LM Studio instance on `:8080` — provider UI toggles correctly; dead default URL (`:1234`) shows friendly error; **live model discovery** listed all 8 models from `/v1/models`; settings persisted with no API key; **real meal generation via Qwen3.8-27B** (3 meals in 138 s) rendered with honest match badges (“Uses 2 of your 2”); request verified hitting `:8080/v1/chat/completions`; zero page errors. Evidence: `/tmp/froggy-lm-qa/` (`qa.js`, `shots/live-results.png`).
+- **Nutrition DB unit tests (canned fetch, node):** 5/5 — full model nutrition passes through unflagged; all-zero model output → DB fallback computes correct values by hand-check (Eggs+Rice: 171 kcal / P 9.6 / C 18.3 / F 6.1) and sets `nutritionEstimated`; blocked-only pantry (“Spices”) stays zero without a false estimate flag; prompt injection includes verified facts for Eggs+Rice and excludes blocked terms.
+- **Nutrition DB live E2E (real LM Studio, 2026-09-20):** user repro fixed — `gemma-4-31b-it-qat` previously omitted protein/fat; with the food DB it returned complete model-provided nutrition for all 3 meals in 99 s (e.g. “P 18 g” on every card), zero ≈-fallbacks needed, prompt verified to carry the per-100 g facts (in-page fetch capture — CDP `postData()` is unreliable cross-origin), OpenNutrition attribution visible, no page errors. Qwen3.8-27B regression: 4 meals in ~420 s, all with complete model-provided nutrition, prompt facts verified, zero errors. Evidence: `/tmp/froggy-lm-qa/` (`qa-fooddb.js`, `qa-qwen-trace.js`, `shots/fooddb-*.png`).
 - Evidence: screenshots in `/tmp/froggy-qa/subagent/shots/live-*.png`, logs in `/tmp/froggy-qa/qa-live.out` and `/tmp/froggy-qa/llm-proxy/proxy.log`.
 
 ### Docs
@@ -50,7 +53,7 @@ Add an API key in the app's **Settings** tab (Anthropic / Gemini / Groq). For iP
 
 ## Known limitations / open items
 
-- Nutrition values are model estimates per serving — guidance, not lab analysis.
+- Nutrition values are grounded in OpenNutrition per-100 g facts (injected into the prompt) but remain per-serving estimates — guidance, not lab analysis. DB-fallback cards are explicitly marked ≈ estimated.
 - Data is per-browser `localStorage`; no cloud sync (local JSON backup/restore covers data loss — see Backups above).
 - No push notifications (PWA on iOS limits these anyway).
 - Optional future work: meal history calendar view, pantry shopping-list export, multi-language UI.

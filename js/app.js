@@ -251,9 +251,9 @@
             <ol>${meal.steps.map((s) => `<li>${esc(s)}</li>`).join('')}</ol>
           </details>` : ''}
         <div class="nutrition">
-          <span>🔥 ${n.calories || '—'} kcal</span><span>💪 P ${n.proteinG || 0}g</span>
+          <span>${meal.nutritionEstimated ? '≈' : ''}🔥 ${n.calories || '—'} kcal</span><span>💪 P ${n.proteinG || 0}g</span>
           <span>🌾 C ${n.carbsG || 0}g</span><span>🧈 F ${n.fatG || 0}g</span>
-          <span class="per-serving">per serving · serves ${meal.servings}</span>
+          <span class="per-serving">per serving · serves ${meal.servings}${meal.nutritionEstimated ? ' · nutrition estimated from ingredient database' : ''}</span>
         </div>
         ${meal.healthNote ? `<p class="health-note">💚 ${esc(meal.healthNote)}</p>` : ''}
         <div class="meal-actions">
@@ -270,7 +270,7 @@
     box.innerHTML = `
       <h2 class="section-title">Chef Froggy’s picks</h2>
       ${state.lastResults.meals.map((m) => mealCardHTML(m, total)).join('')}
-      <p class="results-note">Tap the heart to save a favorite · “I ate this” logs one serving to today.</p>`;
+      <p class="results-note">Tap the heart to save a favorite · “I ate this” logs one serving to today. Nutrition facts from <a href="https://www.opennutrition.app" target="_blank" rel="noopener">OpenNutrition</a>.</p>`;
   }
 
   function findMealById(id) {
@@ -441,7 +441,7 @@
   function renderFavs() {
     const favs = favorites();
     $('#favList').innerHTML = favs.length
-      ? favs.map((m) => mealCardHTML(m, null)).join('') + '<p class="results-note">“I ate this” works on favorites too.</p>'
+      ? favs.map((m) => mealCardHTML(m, null)).join('') + '<p class="results-note">“I ate this” works on favorites too. Nutrition facts from <a href="https://www.opennutrition.app" target="_blank" rel="noopener">OpenNutrition</a>.</p>'
       : '<p class="empty-note" style="background:none;box-shadow:none;padding:4px 2px">No favorites yet — tap the 🤍 on any meal to save it here. 🐸</p>';
 
     const h = history();

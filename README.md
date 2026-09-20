@@ -52,6 +52,15 @@ Notes:
 
 > Tip for testing without spending tokens: point the **API base URL** field (visible under the Anthropic option) at any local proxy that speaks the Anthropic `/v1/messages` shape, and use any non-empty key. That's exactly how this project's QA runs its "local LLM" mode.
 
+## Where do the nutrition numbers come from?
+
+Two layers, so every meal card shows honest per-serving values:
+
+1. **Verified facts in the prompt** — `js/fooddb.js` bundles a curated subset of the [OpenNutrition](https://www.opennutrition.app) foods database (9,107 everyday + prepared foods, ~250 KB). When you generate meals, the per-100 g calories/protein/carbs/fat for your actual pantry items are injected into the LLM prompt, so its `nutritionPerServing` estimates are grounded in real data instead of vibes.
+2. **Database fallback** — if a model returns no nutrition at all (some smaller models skip it), the app computes an estimate from the same database (~125 g of the meal's pantry ingredients per serving) and marks the card with **≈ “nutrition estimated from ingredient database”** so you always know which numbers are estimates.
+
+Nutrition facts © OpenNutrition, licensed under ODbL/DbCL — attribution is shown in the app wherever meals are displayed. The bundled subset lives in `js/fooddb.js` (regenerated from the open-source TSV export; see its header for source + license).
+
 ## Backups & restore
 
 All data lives in your browser's `localStorage`, which Safari can wipe (e.g. "Clear Website Data", storage pressure, or a reinstall). The **Your data** card on the Settings tab protects against that:
