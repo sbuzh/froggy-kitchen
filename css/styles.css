@@ -140,7 +140,13 @@ p { margin: 6px 0; }
   padding: calc(10px + env(safe-area-inset-top)) 16px 10px;
 }
 .brand { display: flex; align-items: center; gap: 12px; max-width: 640px; margin: 0 auto; }
-.mascot svg { width: 46px; height: 46px; display: block; }
+.mascot { width: 52px; height: 52px; display: block; flex: none; }
+
+/* Generated Lagoon icons (icons/lagoon/*.png) — sized per context */
+.row-ico { width: 24px; height: 24px; flex: none; }
+.btn-ico { width: 27px; height: 27px; vertical-align: -8px; margin-right: 7px; }
+.goal-ico { width: 20px; height: 20px; vertical-align: -4.5px; margin-right: 6px; }
+.chip-ico { width: 19px; height: 19px; vertical-align: -4.5px; margin-right: 3px; }
 .tagline { margin: 0; font-size: 13.5px; color: var(--muted); }
 
 /* ---------- layout ---------- */
@@ -268,9 +274,11 @@ input:focus, select:focus { outline: none; border-color: var(--pond); background
 .meal-top h3 { margin: 0; font-size: 18.5px; flex: 1; }
 .heart {
   border: none; background: var(--cream); border-radius: 50%;
-  width: 42px; height: 42px; font-size: 20px; cursor: pointer; line-height: 1; padding: 0; flex: none;
+  width: 42px; height: 42px; cursor: pointer; line-height: 1; padding: 0; flex: none;
 }
 .heart.on { background: var(--danger-soft); }
+.heart img { width: 23px; height: 23px; display: block; filter: grayscale(1) opacity(0.45); transition: filter 0.15s ease; }
+.heart.on img { filter: none; }
 
 .desc { color: var(--ink); margin: 8px 0 10px; font-size: 15px; }
 
@@ -376,7 +384,8 @@ input:focus, select:focus { outline: none; border-color: var(--pond); background
   font: inherit; color: var(--muted); display: flex; flex-direction: column; align-items: center; gap: 3px;
   padding: 9px 4px calc(7px + env(safe-area-inset-bottom) * 0.2); min-height: 58px;
 }
-.tabbtn .ico { font-size: 23px; line-height: 1; }
+.tabbtn .ico { line-height: 1; }
+.tabbtn .ico img { width: 27px; height: 27px; display: block; }
 .tabbtn span:last-child { font-size: 11.5px; font-weight: 700; }
 .tabbtn.active { color: var(--accent-text); background: linear-gradient(180deg, transparent, var(--active-tint)); border-radius: 16px 16px 0 0; }
 

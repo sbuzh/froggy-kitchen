@@ -7,14 +7,15 @@
 
   /* ================= constants ================= */
 
+  /* icon = filename in icons/lagoon/ (generated set); cuisines without one fall back to emoji. */
   const CUISINES = [
-    { id: 'french', label: 'French', emoji: '🥐' },
-    { id: 'italian', label: 'Italian', emoji: '🍝' },
-    { id: 'jamaican', label: 'Jamaican', emoji: '🌶️' },
-    { id: 'mexican', label: 'Mexican', emoji: '🌮' },
-    { id: 'thai', label: 'Thai', emoji: '🍜' },
-    { id: 'indian', label: 'Indian', emoji: '🍛' },
-    { id: 'mediterranean', label: 'Mediterranean', emoji: '🫒' },
+    { id: 'french', label: 'French', emoji: '🥐', icon: 'croissant' },
+    { id: 'italian', label: 'Italian', emoji: '🍝', icon: 'pasta' },
+    { id: 'jamaican', label: 'Jamaican', emoji: '🌶️', icon: 'chili' },
+    { id: 'mexican', label: 'Mexican', emoji: '🌮', icon: 'taco' },
+    { id: 'thai', label: 'Thai', emoji: '🍜', icon: 'noodles' },
+    { id: 'indian', label: 'Indian', emoji: '🍛', icon: 'curry' },
+    { id: 'mediterranean', label: 'Mediterranean', emoji: '🫒', icon: 'olives' },
     { id: 'caribbean', label: 'Caribbean', emoji: '🏝️' },
     { id: 'american', label: 'American', emoji: '🍔' },
     { id: 'surprise', label: 'Surprise me', emoji: '🎲' },
@@ -147,7 +148,7 @@
   function renderCuisineChips() {
     $('#cuisineChips').innerHTML = CUISINES.map((c) => `
       <button type="button" class="chip ${state.prefs.cuisine === c.id ? 'selected' : ''}" data-cuisine="${c.id}">
-        ${c.emoji} ${esc(c.label)}
+        ${c.icon ? `<img class="chip-ico" src="./icons/lagoon/${c.icon}.png" alt="">` : c.emoji} ${esc(c.label)}
       </button>`).join('');
   }
 
@@ -244,7 +245,7 @@
       <article class="card meal-card" data-meal-id="${meal.id}">
         <div class="meal-top">
           <h3>${esc(meal.name)}</h3>
-          <button type="button" class="heart ${fav ? 'on' : ''}" data-act="fav" aria-label="Save to favorites">${fav ? '❤️' : '🤍'}</button>
+          <button type="button" class="heart ${fav ? 'on' : ''}" data-act="fav" aria-label="Save to favorites"><img src="./icons/lagoon/heart.png" alt=""></button>
         </div>
         ${meal.description ? `<p class="desc">${esc(meal.description)}</p>` : ''}
         ${totalPantry === null ? '' : `<span class="match-badge">${esc(matchBadgeText(meal, totalPantry))}</span>`}

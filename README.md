@@ -104,7 +104,10 @@ froggy-kitchen/
 │   ├── store.js          # FroggyStore: localStorage persistence (pantry, log, water, weight, settings)
 │   ├── providers.js      # FroggyProviders: Anthropic / Gemini / Groq + JSON validation & normalization
 │   └── app.js            # UI wiring, tabs, meal cards, match scores, toasts
-└── icons/                # icon.svg source + PNGs (192, 512, apple-touch-icon)
+└── icons/
+    ├── icon.svg          # original vector frog (legacy source)
+    ├── …                 # PWA icons: PNGs (192, 512, apple-touch) rendered from the generated mascot
+    └── lagoon/           # generated icon set (Qwen Image 2.1): transparent UI icons + raw sources
 ```
 
 ## How the "match score" stays honest

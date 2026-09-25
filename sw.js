@@ -1,6 +1,6 @@
 /* Froggy Kitchen service worker — offline app shell only.
  * API calls always go to the network (never cached). */
-const CACHE = 'froggy-v3';
+const CACHE = 'froggy-v4';
 const ASSETS = [
   './',
   './index.html',
@@ -13,6 +13,23 @@ const ASSETS = [
   './icons/icon-192.png',
   './icons/icon-512.png',
   './icons/apple-touch-icon.png',
+  // Lagoon icon set (generated, transparent PNGs)
+  './icons/lagoon/mascot.png',
+  './icons/lagoon/cook.png',
+  './icons/lagoon/water.png',
+  './icons/lagoon/heart.png',
+  './icons/lagoon/gear.png',
+  './icons/lagoon/flame.png',
+  './icons/lagoon/dumbbell.png',
+  './icons/lagoon/scale.png',
+  './icons/lagoon/basket.png',
+  './icons/lagoon/croissant.png',
+  './icons/lagoon/pasta.png',
+  './icons/lagoon/chili.png',
+  './icons/lagoon/taco.png',
+  './icons/lagoon/noodles.png',
+  './icons/lagoon/curry.png',
+  './icons/lagoon/olives.png',
 ];
 
 self.addEventListener('install', (e) => {
