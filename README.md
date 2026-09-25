@@ -47,8 +47,16 @@ Pick **LM Studio · Local** in Settings — no API key, nothing leaves your mach
 3. Pick a model, hit **Save**, and cook.
 
 Notes:
-- Use the app from the same machine (e.g. `python3 -m http.server` or opening `index.html` directly). Some browsers — notably Chrome — block calls to `localhost`/LAN addresses when the page itself is served from a public HTTPS site, so the GitHub Pages copy may not reach your local server.
+- **Open the app from a non-public page.** Browsers block calls *from public HTTPS pages* (like the GitHub Pages copy) to `localhost`/LAN servers — Chrome's Private Network Access / mixed-content rules, and LM Studio doesn't send the header Chrome requires. Verified 2026-09-21: from `https://sbuzh.github.io`, both `http://127.0.0.1:8080` **and** a LAN IP fail even with CORS on; the same calls work fine when the page is served locally over plain HTTP. So for local inference, open the app from your own machine's network instead of sbuzh.github.io.
 - If you enable “Require Authentication” in LM Studio, paste its token into the API key field — it’s sent only to your own server.
+
+### Using local inference from another device (e.g. your phone)
+
+1. On the computer: LM Studio → **Developer tab** → start the server with **“Serve on local network”** enabled.
+2. On the computer, serve the app over your whole network: `python3 -m http.server 8090 --bind 0.0.0.0` (any free port works).
+3. Find the computer's LAN IP (`ip addr`, or your Wi-Fi settings) — e.g. `192.168.0.91`.
+4. On the phone, open that address in your browser: `http://192.168.0.91:8090` — **not** the GitHub Pages URL (see note above).
+5. In Settings → LM Studio server URL, use the **computer's** IP: `http://192.168.0.91:8080`. ⚠️ `127.0.0.1` / `localhost` always means *the device you're viewing the page on* — from a phone it points at the phone itself and can never reach your computer.
 
 > Tip for testing without spending tokens: point the **API base URL** field (visible under the Anthropic option) at any local proxy that speaks the Anthropic `/v1/messages` shape, and use any non-empty key. That's exactly how this project's QA runs its "local LLM" mode.
 

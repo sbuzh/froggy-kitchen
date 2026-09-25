@@ -164,6 +164,38 @@ const FroggyProviders = (() => {
     return (String((settings && settings.serverUrl) || 'http://localhost:1234').trim() || 'http://localhost:1234').replace(/\/+$/, '');
   }
 
+  /**
+   * Diagnose why a local/LAN LM Studio URL can't be reached from this page —
+   * browser security rules (Chrome Private Network Access, mixed content), not the app.
+   * Returns an explanation string, or null when nothing specific applies (server down / CORS off).
+   */
+  function diagnoseLocalUrl(url, pageHref) {
+    let host;
+    try { host = new URL(String(url)).hostname.toLowerCase(); } catch { return null; }
+    const isLoopback = host === 'localhost' || host === '127.0.0.1' || host === '::1';
+    const isPrivateIp = /^(10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.)/.test(host);
+    if (!isLoopback && !isPrivateIp) return null; // public URL — the generic error is fine
+
+    const href = pageHref || (typeof location !== 'undefined' ? location.href : '');
+    let proto = '', pageHost = '';
+    try { const u = new URL(href); proto = u.protocol; pageHost = u.hostname.toLowerCase(); } catch {}
+    const pageSecure = proto === 'https:';
+    // file:// URLs have an empty hostname — opening index.html directly is a local usage
+    const pageLocal = !proto || proto === 'file:' || ['localhost', '127.0.0.1', '::1'].includes(pageHost);
+
+    if (pageSecure && !pageLocal) {
+      // Viewing the app from a public HTTPS site (e.g. GitHub Pages).
+      const wrongDevice = isLoopback
+        ? `If you're on a different device (e.g. your phone), note that ${host} means *that* device, not your computer — use the computer's LAN IP instead (like http://192.168.x.x:8080). `
+        : '';
+      return `${wrongDevice}Browsers block HTTPS pages from calling local/LAN servers (Chrome's Private Network Access / mixed-content rules), and LM Studio doesn't send the header Chrome requires. Fix: on your computer run \`python3 -m http.server 8090 --bind 0.0.0.0\`, open that address here (e.g. http://192.168.x.x:8090), and set the server URL to the same IP with port 8080.`;
+    }
+    if (!pageSecure && isLoopback && !pageLocal) {
+      return `${host} points at the device you're viewing this page on, not your computer. Use your computer's LAN IP instead (e.g. http://192.168.x.x:8080) and enable “Serve on local network” in LM Studio.`;
+    }
+    return null; // server down / CORS off — the generic message applies
+  }
+
   /** Live list of the models LM Studio has available right now. */
   async function listLocalModels(settings) {
     const res = await fetch(localBase(settings) + '/v1/models', { headers: { accept: 'application/json' } });
@@ -308,9 +340,12 @@ const FroggyProviders = (() => {
       else if (prov.local) text = await callLocal(s, req);
       else text = await callAnthropic(s, req); // default
     } catch (err) {
-      if (err instanceof TypeError) throw new Error(prov.local
-        ? `Could not reach LM Studio at ${localBase(settings)}. Start the server in LM Studio and make sure “Enable CORS” is switched on.`
-        : 'Could not reach the provider. Check your internet connection — or the API base URL in Settings.');
+      if (err instanceof TypeError) {
+        const diag = prov.local ? diagnoseLocalUrl(localBase(settings)) : null;
+        throw new Error(prov.local
+          ? `Could not reach LM Studio at ${localBase(settings)}.` + (diag ? ' ' + diag : ' Start the server in LM Studio and make sure “Enable CORS” is switched on.')
+          : 'Could not reach the provider. Check your internet connection — or the API base URL in Settings.');
+      }
       throw err;
     }
 
@@ -321,5 +356,5 @@ const FroggyProviders = (() => {
     return PROVIDERS.find((p) => p.id === id) || PROVIDERS[0];
   }
 
-  return { PROVIDERS, generateMeals, providerById, listLocalModels };
+  return { PROVIDERS, generateMeals, providerById, listLocalModels, diagnoseLocalUrl };
 })();
