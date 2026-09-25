@@ -7,7 +7,8 @@
 
   /* ================= constants ================= */
 
-  /* icon = filename in icons/lagoon/ (generated set); cuisines without one fall back to emoji. */
+  /* icon = filename in icons/lagoon/ (generated set, shown in the Lagoon theme);
+     other themes — and cuisines without an icon — show the emoji. */
   const CUISINES = [
     { id: 'french', label: 'French', emoji: '🥐', icon: 'croissant' },
     { id: 'italian', label: 'Italian', emoji: '🍝', icon: 'pasta' },
@@ -148,7 +149,7 @@
   function renderCuisineChips() {
     $('#cuisineChips').innerHTML = CUISINES.map((c) => `
       <button type="button" class="chip ${state.prefs.cuisine === c.id ? 'selected' : ''}" data-cuisine="${c.id}">
-        ${c.icon ? `<img class="chip-ico" src="./icons/lagoon/${c.icon}.png" alt="">` : c.emoji} ${esc(c.label)}
+        ${c.icon ? `<img class="chip-ico gen-ico" src="./icons/lagoon/${c.icon}.png" alt=""><span class="emoji-fb">${c.emoji}</span> ` : `${c.emoji} `}${esc(c.label)}
       </button>`).join('');
   }
 
@@ -245,7 +246,7 @@
       <article class="card meal-card" data-meal-id="${meal.id}">
         <div class="meal-top">
           <h3>${esc(meal.name)}</h3>
-          <button type="button" class="heart ${fav ? 'on' : ''}" data-act="fav" aria-label="Save to favorites"><img src="./icons/lagoon/heart.png" alt=""></button>
+          <button type="button" class="heart ${fav ? 'on' : ''}" data-act="fav" aria-label="Save to favorites"><img class="gen-ico" src="./icons/lagoon/heart.png" alt=""><span class="emoji-fb">${fav ? '❤️' : '🤍'}</span></button>
         </div>
         ${meal.description ? `<p class="desc">${esc(meal.description)}</p>` : ''}
         ${totalPantry === null ? '' : `<span class="match-badge">${esc(matchBadgeText(meal, totalPantry))}</span>`}

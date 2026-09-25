@@ -31,9 +31,49 @@
 </head>
 <body>
 
+  <!-- Chef Froggy (African dwarf frog in a chef hat) — original vector. Rendered by Classic/Night;
+       Lagoon swaps in the generated mascot (icons/lagoon/mascot.png) via CSS. Hidden symbol, re-used below. -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="froggy" viewBox="0 0 200 200">
+      <!-- feet -->
+      <ellipse cx="68" cy="170" rx="17" ry="9" fill="#7DBB6C"/>
+      <ellipse cx="132" cy="170" rx="17" ry="9" fill="#7DBB6C"/>
+      <!-- body -->
+      <ellipse cx="100" cy="124" rx="54" ry="46" fill="#8FC97E"/>
+      <!-- belly -->
+      <ellipse cx="100" cy="139" rx="35" ry="26" fill="#F4F8EA"/>
+      <!-- dwarf-frog speckles -->
+      <circle cx="58"  cy="112" r="3.5" fill="#5E9455"/>
+      <circle cx="70"  cy="97"  r="2.5" fill="#5E9455"/>
+      <circle cx="142" cy="112" r="3.5" fill="#5E9455"/>
+      <circle cx="130" cy="96"  r="2.5" fill="#5E9455"/>
+      <circle cx="100" cy="90"  r="2.5" fill="#5E9455"/>
+      <!-- eyes -->
+      <circle cx="74"  cy="82" r="16" fill="#FDFEFB"/>
+      <circle cx="126" cy="82" r="16" fill="#FDFEFB"/>
+      <circle cx="77"  cy="85" r="7.5" fill="#2E4A38"/>
+      <circle cx="123" cy="85" r="7.5" fill="#2E4A38"/>
+      <circle cx="79.5"  cy="82.5" r="2.6" fill="#ffffff"/>
+      <circle cx="125.5" cy="82.5" r="2.6" fill="#ffffff"/>
+      <!-- cheeks -->
+      <ellipse cx="57"  cy="113" rx="8" ry="5.5" fill="#F3B7A4" opacity="0.75"/>
+      <ellipse cx="143" cy="113" rx="8" ry="5.5" fill="#F3B7A4" opacity="0.75"/>
+      <!-- smile -->
+      <path d="M 76 112 Q 100 131 124 112" stroke="#3E5C46" stroke-width="5" fill="none" stroke-linecap="round"/>
+      <!-- chef hat: puffs then band -->
+      <circle cx="80"  cy="42" r="15" fill="#FFFFFF" stroke="#DDD8C6" stroke-width="2.5"/>
+      <circle cx="120" cy="42" r="15" fill="#FFFFFF" stroke="#DDD8C6" stroke-width="2.5"/>
+      <circle cx="100" cy="36" r="17" fill="#FFFFFF" stroke="#DDD8C6" stroke-width="2.5"/>
+      <rect x="64" y="49" width="72" height="15" rx="7.5" fill="#FFFFFF" stroke="#DDD8C6" stroke-width="2.5"/>
+    </symbol>
+  </svg>
+
   <header class="app-header">
     <div class="brand">
-      <img class="mascot" src="./icons/lagoon/mascot.png" alt="Chef Froggy">
+      <span class="mascot">
+        <svg class="mascot-svg" viewBox="0 0 200 200" role="img" aria-label="Chef Froggy"><use href="#froggy"/></svg>
+        <img class="mascot-img gen-ico" src="./icons/lagoon/mascot.png" alt="">
+      </span>
       <div class="brand-text">
         <h1>Froggy Kitchen</h1>
         <p id="greeting" class="tagline"></p>
@@ -48,8 +88,8 @@
 
       <div class="card pantry-card">
         <button type="button" class="pantry-toggle" id="pantryToggle" aria-expanded="false">
-          <img class="row-ico" src="./icons/lagoon/basket.png" alt="">
-          <span>Your pantry</span>
+          <img class="row-ico gen-ico" src="./icons/lagoon/basket.png" alt="">
+          <span><span class="emoji-fb">🧺</span> Your pantry</span>
           <span class="badge" id="pantryCount">0</span>
           <span class="chev" id="pantryChev">▾</span>
         </button>
@@ -92,7 +132,7 @@
         <input id="allergies" type="text" maxlength="80" placeholder="Allergies (e.g. nuts, shellfish)">
       </div>
 
-      <button id="generateBtn" class="big-btn"><img class="btn-ico" src="./icons/lagoon/cook.png" alt="">Cook up ideas</button>
+      <button id="generateBtn" class="big-btn"><img class="btn-ico gen-ico" src="./icons/lagoon/cook.png" alt=""><span class="emoji-fb">🍳</span> Cook up ideas</button>
       <div id="genStatus" class="status hidden"></div>
       <div id="results"></div>
     </section>
@@ -105,24 +145,24 @@
 
       <div class="card goals-card">
         <div class="goal-block">
-          <div class="goal-head"><span><img class="goal-ico" src="./icons/lagoon/flame.png" alt="">Calories</span><span id="calText" class="goal-num"></span></div>
+          <div class="goal-head"><span><img class="goal-ico gen-ico" src="./icons/lagoon/flame.png" alt=""><span class="emoji-fb">🔥</span>Calories</span><span id="calText" class="goal-num"></span></div>
           <div class="bar"><div id="calBar" class="fill cal"></div></div>
           <p id="calSub" class="goal-sub"></p>
         </div>
         <div class="goal-block">
-          <div class="goal-head"><span><img class="goal-ico" src="./icons/lagoon/dumbbell.png" alt="">Protein</span><span id="proText" class="goal-num"></span></div>
+          <div class="goal-head"><span><img class="goal-ico gen-ico" src="./icons/lagoon/dumbbell.png" alt=""><span class="emoji-fb">💪</span>Protein</span><span id="proText" class="goal-num"></span></div>
           <div class="bar"><div id="proBar" class="fill pro"></div></div>
           <p id="proSub" class="goal-sub"></p>
         </div>
       </div>
 
       <div class="card water-card">
-        <div class="goal-head"><span><img class="goal-ico" src="./icons/lagoon/water.png" alt="">Water</span><span id="waterText" class="goal-num"></span></div>
+        <div class="goal-head"><span><img class="goal-ico gen-ico" src="./icons/lagoon/water.png" alt=""><span class="emoji-fb">💧</span>Water</span><span id="waterText" class="goal-num"></span></div>
         <div id="droplets" class="droplets"></div>
       </div>
 
       <div class="card weight-card">
-        <div class="goal-head"><span><img class="goal-ico" src="./icons/lagoon/scale.png" alt="">Weight check-in</span><span id="weightUnitLabel" class="goal-num"></span></div>
+        <div class="goal-head"><span><img class="goal-ico gen-ico" src="./icons/lagoon/scale.png" alt=""><span class="emoji-fb">⚖️</span>Weight check-in</span><span id="weightUnitLabel" class="goal-num"></span></div>
         <form id="weightForm" autocomplete="off">
           <input id="weightInput" type="number" inputmode="decimal" step="0.1" min="1" max="500" placeholder="Today's weight">
           <button type="submit" class="btn-small">Log</button>
@@ -242,10 +282,10 @@
 
   <!-- ============ BOTTOM TAB BAR ============ -->
   <nav class="tabbar" role="tablist" aria-label="Main tabs">
-    <button type="button" class="tabbtn active" data-tab="cook" role="tab"><span class="ico"><img src="./icons/lagoon/cook.png" alt=""></span><span>Cook</span></button>
-    <button type="button" class="tabbtn" data-tab="today" role="tab"><span class="ico"><img src="./icons/lagoon/water.png" alt=""></span><span>Today</span></button>
-    <button type="button" class="tabbtn" data-tab="favs" role="tab"><span class="ico"><img src="./icons/lagoon/heart.png" alt=""></span><span>Favorites</span></button>
-    <button type="button" class="tabbtn" data-tab="settings" role="tab"><span class="ico"><img src="./icons/lagoon/gear.png" alt=""></span><span>Settings</span></button>
+    <button type="button" class="tabbtn active" data-tab="cook" role="tab"><span class="ico"><img class="gen-ico" src="./icons/lagoon/cook.png" alt=""><span class="emoji-fb">🍳</span></span><span>Cook</span></button>
+    <button type="button" class="tabbtn" data-tab="today" role="tab"><span class="ico"><img class="gen-ico" src="./icons/lagoon/water.png" alt=""><span class="emoji-fb">💧</span></span><span>Today</span></button>
+    <button type="button" class="tabbtn" data-tab="favs" role="tab"><span class="ico"><img class="gen-ico" src="./icons/lagoon/heart.png" alt=""><span class="emoji-fb">❤️</span></span><span>Favorites</span></button>
+    <button type="button" class="tabbtn" data-tab="settings" role="tab"><span class="ico"><img class="gen-ico" src="./icons/lagoon/gear.png" alt=""><span class="emoji-fb">⚙️</span></span><span>Settings</span></button>
   </nav>
 
   <!-- ============ QUICK LOG MODAL ============ -->

@@ -141,12 +141,26 @@ p { margin: 6px 0; }
 }
 .brand { display: flex; align-items: center; gap: 12px; max-width: 640px; margin: 0 auto; }
 .mascot { width: 52px; height: 52px; display: block; flex: none; }
+.mascot svg { width: 100%; height: 100%; display: block; }
+.mascot img { width: 100%; height: 100%; }
 
 /* Generated Lagoon icons (icons/lagoon/*.png) — sized per context */
 .row-ico { width: 24px; height: 24px; flex: none; }
 .btn-ico { width: 27px; height: 27px; vertical-align: -8px; margin-right: 7px; }
 .goal-ico { width: 20px; height: 20px; vertical-align: -4.5px; margin-right: 6px; }
 .chip-ico { width: 19px; height: 19px; vertical-align: -4.5px; margin-right: 3px; }
+
+/* The generated set is Lagoon-only — Classic/Night keep the original emoji + SVG mascot.
+   .gen-ico = generated icon (hidden by default), .emoji-fb = emoji fallback (shown by default).
+   Both variants live in the DOM, so theme switches are instant CSS with no JS and no flash.
+   NOTE: this block owns `display` for these elements — sizing rules above must not set it. */
+.gen-ico { display: none; }
+[data-theme="lagoon"] .gen-ico { display: inline-block; }
+[data-theme="lagoon"] .mascot-svg { display: none; }
+[data-theme="lagoon"] .emoji-fb { display: none; }
+.emoji-fb { line-height: 1; }
+.big-btn .emoji-fb { margin-right: 7px; }
+.goal-head .emoji-fb { margin-right: 5px; }
 .tagline { margin: 0; font-size: 13.5px; color: var(--muted); }
 
 /* ---------- layout ---------- */
@@ -275,9 +289,11 @@ input:focus, select:focus { outline: none; border-color: var(--pond); background
 .heart {
   border: none; background: var(--cream); border-radius: 50%;
   width: 42px; height: 42px; cursor: pointer; line-height: 1; padding: 0; flex: none;
+  display: grid; place-items: center;
 }
 .heart.on { background: var(--danger-soft); }
-.heart img { width: 23px; height: 23px; display: block; filter: grayscale(1) opacity(0.45); transition: filter 0.15s ease; }
+.heart .emoji-fb { font-size: 20px; }
+.heart img { width: 23px; height: 23px; filter: grayscale(1) opacity(0.45); transition: filter 0.15s ease; }
 .heart.on img { filter: none; }
 
 .desc { color: var(--ink); margin: 8px 0 10px; font-size: 15px; }
@@ -384,8 +400,9 @@ input:focus, select:focus { outline: none; border-color: var(--pond); background
   font: inherit; color: var(--muted); display: flex; flex-direction: column; align-items: center; gap: 3px;
   padding: 9px 4px calc(7px + env(safe-area-inset-bottom) * 0.2); min-height: 58px;
 }
-.tabbtn .ico { line-height: 1; }
-.tabbtn .ico img { width: 27px; height: 27px; display: block; }
+.tabbtn .ico { line-height: 1; display: flex; justify-content: center; }
+.tabbtn .ico img { width: 27px; height: 27px; }
+.tabbtn .emoji-fb { font-size: 23px; }
 .tabbtn span:last-child { font-size: 11.5px; font-weight: 700; }
 .tabbtn.active { color: var(--accent-text); background: linear-gradient(180deg, transparent, var(--active-tint)); border-radius: 16px 16px 0 0; }
 
