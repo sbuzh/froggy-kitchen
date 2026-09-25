@@ -1,6 +1,6 @@
 /* Froggy Kitchen service worker — offline app shell only.
  * API calls always go to the network (never cached). */
-const CACHE = 'froggy-v2';
+const CACHE = 'froggy-v3';
 const ASSETS = [
   './',
   './index.html',

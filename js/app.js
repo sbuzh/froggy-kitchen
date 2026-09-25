@@ -35,6 +35,14 @@
 
   const DEFAULTS = { goals: { calories: 1800, proteinG: 90 }, waterGoal: 8, weightUnit: 'kg' };
 
+  /* Themes: id must match the [data-theme="…"] blocks in css/styles.css.
+   * themeColor is applied to <meta name="theme-color"> for browser chrome / iOS status bar. */
+  const THEMES = [
+    { id: 'classic', label: 'Classic', emoji: '🐸', themeColor: '#5C9E72' },
+    { id: 'night', label: 'Night pond', emoji: '🌙', themeColor: '#101814' },
+    { id: 'lagoon', label: 'Lagoon', emoji: '🌊', themeColor: '#4C9E7E' },
+  ];
+
   /* ================= state ================= */
 
   const state = {
@@ -45,6 +53,7 @@
       S.get('prefs', {})
     ),
     settings: Object.assign({ provider: 'anthropic', backupInterval: 86400 }, S.get('settings', {})),
+    theme: THEMES.some((t) => t.id === S.get('theme', 'classic')) ? S.get('theme') : 'classic',
     goals: Object.assign({}, DEFAULTS.goals, S.get('goals', {})),
     waterGoal: S.get('waterGoal', DEFAULTS.waterGoal),
     weightUnit: S.get('weightUnit', DEFAULTS.weightUnit),
@@ -416,17 +425,18 @@
     const y = (v) => PY + (1 - (v - min) / (max - min)) * (H - 2 * PY);
 
     const line = pts.map((p, i) => `${x(i).toFixed(1)},${y(p.value).toFixed(1)}`).join(' ');
-    const dots = pts.map((p, i) => `<circle cx="${x(i).toFixed(1)}" cy="${y(p.value).toFixed(1)}" r="4.5" fill="#3E7A5B"/>`).join('');
+    // Colors come from CSS variables so the chart follows the active theme.
+    const dots = pts.map((p, i) => `<circle cx="${x(i).toFixed(1)}" cy="${y(p.value).toFixed(1)}" r="4.5" style="fill:var(--pond-deep)"/>`).join('');
 
     box.innerHTML = `
       <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Weight trend chart">
-        <line x1="${PX}" y1="${H - PY + 8}" x2="${W - PX}" y2="${H - PY + 8}" stroke="#E5DECB" stroke-width="2"/>
-        <polyline points="${line}" fill="none" stroke="#5C9E72" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <line x1="${PX}" y1="${H - PY + 8}" x2="${W - PX}" y2="${H - PY + 8}" style="stroke:var(--sand-deep)" stroke-width="2"/>
+        <polyline points="${line}" fill="none" style="stroke:var(--pond)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
         ${dots}
-        <text x="${PX}" y="${H - 4}" font-size="10.5" fill="#7A8A80">${esc(fmtDay(pts[0].day))}</text>
-        <text x="${W - PX}" y="${H - 4}" font-size="10.5" fill="#7A8A80" text-anchor="end">${esc(fmtDay(pts[pts.length - 1].day))}</text>
-        <text x="${PX - 6}" y="${(y(max) + 3).toFixed(1)}" font-size="10.5" fill="#7A8A80" text-anchor="end">${max.toFixed(1)}</text>
-        <text x="${PX - 6}" y="${(y(min) + 3).toFixed(1)}" font-size="10.5" fill="#7A8A80" text-anchor="end">${min.toFixed(1)}</text>
+        <text x="${PX}" y="${H - 4}" font-size="10.5" style="fill:var(--muted)">${esc(fmtDay(pts[0].day))}</text>
+        <text x="${W - PX}" y="${H - 4}" font-size="10.5" style="fill:var(--muted)" text-anchor="end">${esc(fmtDay(pts[pts.length - 1].day))}</text>
+        <text x="${PX - 6}" y="${(y(max) + 3).toFixed(1)}" font-size="10.5" style="fill:var(--muted)" text-anchor="end">${max.toFixed(1)}</text>
+        <text x="${PX - 6}" y="${(y(min) + 3).toFixed(1)}" font-size="10.5" style="fill:var(--muted)" text-anchor="end">${min.toFixed(1)}</text>
       </svg>`;
 
     const delta = pts[pts.length - 1].value - pts[0].value;
@@ -458,6 +468,34 @@
 
   function openModal() { $('#modal').classList.remove('hidden'); setTimeout(() => $('#qlName').focus(), 60); }
   function closeModal() { $('#modal').classList.add('hidden'); $('#quickLogForm').reset(); }
+
+  /* ================= themes ================= */
+
+  /** Build the theme picker chips once (called from init). */
+  function renderThemeChips() {
+    const box = $('#themeChips');
+    if (!box) return;
+    box.innerHTML = THEMES.map((t) =>
+      `<button type="button" class="chip" data-theme-id="${t.id}">${t.emoji} ${esc(t.label)}</button>`
+    ).join('');
+    box.addEventListener('click', (e) => {
+      const b = e.target.closest('[data-theme-id]');
+      if (b && b.dataset.themeId !== state.theme) applyTheme(b.dataset.themeId);
+    });
+  }
+
+  /** Apply a theme: <html data-theme>, browser chrome color, persistence, chip highlight. */
+  function applyTheme(id) {
+    const t = THEMES.find((x) => x.id === id) || THEMES[0];
+    state.theme = t.id;
+    document.documentElement.setAttribute('data-theme', t.id);
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', t.themeColor);
+    S.set('theme', t.id);
+    document.querySelectorAll('#themeChips .chip').forEach((c) => {
+      c.classList.toggle('selected', c.dataset.themeId === t.id);
+    });
+  }
 
   /* ================= settings ================= */
 
@@ -519,7 +557,8 @@
       statusEl.textContent = `${models.length} model${models.length === 1 ? '' : 's'} available right now 🐸`;
     } catch (err) {
       sel.innerHTML = '<option value="">— no models found —</option>';
-      statusEl.textContent = `Couldn't reach LM Studio at ${esc(url)}. Start the server in LM Studio (Developer tab), switch on “Enable CORS” in its settings, then tap Refresh.`;
+      const diag = FroggyProviders.diagnoseLocalUrl(url);
+      statusEl.textContent = diag || `Couldn't reach LM Studio at ${esc(url)}. Start the server in LM Studio (Developer tab), switch on “Enable CORS” in its settings, then tap Refresh.`;
     }
   }
 
@@ -749,6 +788,8 @@
   }
 
   function init() {
+    renderThemeChips();
+    applyTheme(state.theme); // head script already applied it pre-paint; this syncs state + chip highlight
     $('#greeting').textContent = greeting();
     renderPantry();
     renderCuisineChips();

@@ -1,5 +1,13 @@
-/* ============ Froggy Kitchen — warm sand, pond green, water blue ============ */
-:root {
+/* ============ Froggy Kitchen — themes ============
+ * The active theme is set on <html data-theme="…"> by a tiny inline script
+ * in index.html (before first paint) and kept in sync by js/app.js.
+ *
+ *  classic — the original look: warm sand, pond green, water blue (default)
+ *  night   — Night Pond: dark mode for low light
+ *  lagoon  — cool slate & blue daytime look */
+
+:root,
+[data-theme="classic"] {
   --sand: #FAF3E7;
   --sand-deep: #F0E4CC;
   --card: #FFFFFF;
@@ -8,14 +16,99 @@
   --pond: #5C9E72;
   --pond-deep: #3E7A5B;
   --pond-soft: #DCEEE2;
+  --accent-text: #3E7A5B;   /* text on pond-soft surfaces (badges, links) */
   --water: #6FB5AE;
+  --water-deep: #4E9A92;
   --water-soft: #DDF0EC;
+  --water-text: #3E7A72;    /* text on water-soft surfaces */
   --cream: #F4F8EA;
   --amber: #E9A13B;
   --amber-soft: #FBEED7;
+  --amber-deep: #9A6414;    /* text on amber-soft surfaces (streaks, indulgent) */
   --danger: #C25E4C;
+  --danger-soft: #F6E0DB;
+  --ink-soft: #4C6B57;      /* softer body text (froggy-says, health notes) */
+  --header-bg: rgba(250, 243, 231, 0.92);
+  --field-bg: #FBF9F3;
+  --track: #EFE9DA;         /* progress-bar track */
+  --pond-light: #7FBF8E;    /* calorie bar gradient end */
+  --water-light: #8FCBC4;   /* protein bar gradient end */
+  --tabbar-bg: rgba(255, 255, 255, 0.96);
+  --active-tint: rgba(92, 158, 114, 0.10);
+  --scrim: rgba(51, 65, 58, 0.45);   /* modal backdrop */
   --shadow: 0 6px 18px rgba(62, 122, 91, 0.10);
+  --btn-shadow: 0 8px 20px rgba(62, 122, 91, 0.25);
+  --water-shadow: 0 8px 20px rgba(78, 154, 146, 0.25);
   --radius: 20px;
+}
+
+[data-theme="night"] {
+  color-scheme: dark;
+  --sand: #101814;
+  --sand-deep: #27392E;
+  --card: #1B2A22;
+  --ink: #EAF1E8;
+  --muted: #9CB0A2;
+  --pond: #57B47C;
+  --pond-deep: #3F9163;
+  --pond-soft: #223D2E;
+  --accent-text: #A8DCBB;
+  --water: #5FB0A8;
+  --water-deep: #47948C;
+  --water-soft: #1F3833;
+  --water-text: #9BD2CB;
+  --cream: #223329;
+  --amber: #E9A13B;
+  --amber-soft: #40351F;
+  --amber-deep: #E3C27E;
+  --danger: #E07B62;
+  --danger-soft: #4A2A22;
+  --ink-soft: #B9D2BC;
+  --header-bg: rgba(16, 24, 20, 0.92);
+  --field-bg: #152119;
+  --track: #2A3E33;
+  --pond-light: #7CCB96;
+  --water-light: #8FD0C8;
+  --tabbar-bg: rgba(18, 27, 22, 0.96);
+  --active-tint: rgba(87, 180, 124, 0.16);
+  --scrim: rgba(5, 10, 8, 0.62);
+  --shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+  --btn-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
+  --water-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
+}
+
+[data-theme="lagoon"] {
+  --sand: #EEF3F6;
+  --sand-deep: #D8E2EA;
+  --card: #FFFFFF;
+  --ink: #2B3940;
+  --muted: #75878F;
+  --pond: #4C9E7E;
+  --pond-deep: #357A5C;
+  --pond-soft: #DDEEE6;
+  --accent-text: #2F7058;
+  --water: #5E9EC4;
+  --water-deep: #417FA6;
+  --water-soft: #DFEDF6;
+  --water-text: #3D7A9C;
+  --cream: #EFF5F2;
+  --amber: #E9A13B;
+  --amber-soft: #FBF0DA;
+  --amber-deep: #9A6414;
+  --danger: #C25E4C;
+  --danger-soft: #F6E0DB;
+  --ink-soft: #48615A;
+  --header-bg: rgba(238, 243, 246, 0.92);
+  --field-bg: #F7FAFB;
+  --track: #E1E9EF;
+  --pond-light: #7CC2A4;
+  --water-light: #93C4DE;
+  --tabbar-bg: rgba(255, 255, 255, 0.96);
+  --active-tint: rgba(76, 158, 126, 0.10);
+  --scrim: rgba(43, 57, 64, 0.45);
+  --shadow: 0 6px 18px rgba(53, 122, 92, 0.10);
+  --btn-shadow: 0 8px 20px rgba(53, 122, 92, 0.25);
+  --water-shadow: 0 8px 20px rgba(65, 127, 166, 0.25);
 }
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -41,7 +134,7 @@ p { margin: 6px 0; }
 /* ---------- header ---------- */
 .app-header {
   position: sticky; top: 0; z-index: 30;
-  background: rgba(250, 243, 231, 0.92);
+  background: var(--header-bg);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   padding: calc(10px + env(safe-area-inset-top)) 16px 10px;
@@ -77,7 +170,7 @@ main {
   color: var(--ink); padding: 2px 0; cursor: pointer; text-align: left;
 }
 .badge {
-  background: var(--pond-soft); color: var(--pond-deep);
+  background: var(--pond-soft); color: var(--accent-text);
   border-radius: 999px; font-size: 13px; font-weight: 700;
   padding: 2px 10px; min-width: 28px; text-align: center;
 }
@@ -90,13 +183,13 @@ main {
 
 input, select {
   font: inherit; color: var(--ink);
-  background: #FBF9F3;
+  background: var(--field-bg);
   border: 1.5px solid var(--sand-deep);
   border-radius: 14px;
   padding: 12px 14px;
   width: 100%;
 }
-input:focus, select:focus { outline: none; border-color: var(--pond); background: #fff; }
+input:focus, select:focus { outline: none; border-color: var(--pond); background: var(--card); }
 
 .btn-small {
   font: inherit; font-weight: 700; cursor: pointer;
@@ -104,7 +197,7 @@ input:focus, select:focus { outline: none; border-color: var(--pond); background
   border: none; border-radius: 14px; padding: 12px 18px;
 }
 .btn-small.primary { background: var(--pond); color: #fff; }
-.btn-small.danger { background: #F6E0DB; color: var(--danger); }
+.btn-small.danger { background: var(--danger-soft); color: var(--danger); }
 
 /* chips */
 .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
@@ -113,7 +206,7 @@ input:focus, select:focus { outline: none; border-color: var(--pond); background
 
 .chip {
   font: inherit; font-size: 14.5px; font-weight: 600; cursor: pointer;
-  border: 1.5px solid var(--sand-deep); background: #fff; color: var(--ink);
+  border: 1.5px solid var(--sand-deep); background: var(--card); color: var(--ink);
   border-radius: 999px; padding: 9px 15px; white-space: nowrap;
 }
 .chip.selected { background: var(--pond); border-color: var(--pond); color: #fff; }
@@ -127,7 +220,7 @@ input:focus, select:focus { outline: none; border-color: var(--pond); background
 }
 .pantry-item .check {
   width: 28px; height: 28px; flex: none; border-radius: 50%;
-  border: 2px solid var(--pond); background: #fff; color: transparent;
+  border: 2px solid var(--pond); background: var(--card); color: transparent;
   font-size: 16px; line-height: 1; cursor: pointer; display: grid; place-items: center; padding: 0;
 }
 .pantry-item.used .check { background: var(--pond); color: #fff; }
@@ -148,7 +241,7 @@ input:focus, select:focus { outline: none; border-color: var(--pond); background
 .stepper { display: flex; align-items: center; gap: 4px; background: var(--cream); border-radius: 999px; padding: 4px; }
 .stepper button {
   width: 40px; height: 40px; border-radius: 50%; border: none; cursor: pointer;
-  background: #fff; color: var(--pond-deep); font-size: 22px; font-weight: 700; line-height: 1;
+  background: var(--card); color: var(--accent-text); font-size: 22px; font-weight: 700; line-height: 1;
 }
 .stepper span { min-width: 34px; text-align: center; font-weight: 800; font-size: 18px; }
 
@@ -158,14 +251,14 @@ input:focus, select:focus { outline: none; border-color: var(--pond); background
   font: inherit; font-size: 18.5px; font-weight: 800; cursor: pointer;
   color: #fff; background: linear-gradient(135deg, var(--pond), var(--pond-deep));
   border: none; border-radius: 18px; padding: 17px;
-  box-shadow: 0 8px 20px rgba(62, 122, 91, 0.25);
+  box-shadow: var(--btn-shadow);
   transition: transform 0.08s ease;
 }
 .big-btn:active { transform: scale(0.98); }
-.big-btn.secondary { background: linear-gradient(135deg, var(--water), #4E9A92); box-shadow: 0 8px 20px rgba(78, 154, 146, 0.25); }
+.big-btn.secondary { background: linear-gradient(135deg, var(--water), var(--water-deep)); box-shadow: var(--water-shadow); }
 .big-btn[disabled] { opacity: 0.6; cursor: wait; }
 
-.status { text-align: center; padding: 18px 0 6px; font-weight: 700; color: var(--pond-deep); }
+.status { text-align: center; padding: 18px 0 6px; font-weight: 700; color: var(--accent-text); }
 .status .hop { display: inline-block; animation: hop 0.9s ease-in-out infinite; font-size: 24px; }
 @keyframes hop { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
 
@@ -177,26 +270,26 @@ input:focus, select:focus { outline: none; border-color: var(--pond); background
   border: none; background: var(--cream); border-radius: 50%;
   width: 42px; height: 42px; font-size: 20px; cursor: pointer; line-height: 1; padding: 0; flex: none;
 }
-.heart.on { background: #FBE3E0; }
+.heart.on { background: var(--danger-soft); }
 
 .desc { color: var(--ink); margin: 8px 0 10px; font-size: 15px; }
 
 .match-badge {
-  display: inline-block; background: var(--pond-soft); color: var(--pond-deep);
+  display: inline-block; background: var(--pond-soft); color: var(--accent-text);
   font-weight: 700; font-size: 13.5px; border-radius: 999px; padding: 6px 12px; margin-bottom: 10px;
 }
 .indulgent-badge {
-  display: inline-block; background: var(--amber-soft); color: #9A6414;
+  display: inline-block; background: var(--amber-soft); color: var(--amber-deep);
   font-weight: 700; font-size: 13.5px; border-radius: 999px; padding: 6px 12px; margin: 0 8px 10px 0;
 }
 
 .missing { background: var(--water-soft); border-radius: 14px; padding: 10px 12px; margin-bottom: 10px; font-size: 14.5px; }
-.missing .label { font-weight: 800; color: #3E7A72; display: block; margin-bottom: 6px; }
+.missing .label { font-weight: 800; color: var(--water-text); display: block; margin-bottom: 6px; }
 .missing-chips { display: flex; flex-wrap: wrap; gap: 6px; }
-.missing-chip { background: #fff; border-radius: 999px; padding: 4px 10px; font-size: 13.5px; font-weight: 600; color: var(--ink); }
+.missing-chip { background: var(--card); border-radius: 999px; padding: 4px 10px; font-size: 13.5px; font-weight: 600; color: var(--ink); }
 
 .meal-card details { margin-bottom: 10px; }
-.meal-card summary { cursor: pointer; font-weight: 700; color: var(--pond-deep); padding: 8px 0; font-size: 15.5px; }
+.meal-card summary { cursor: pointer; font-weight: 700; color: var(--accent-text); padding: 8px 0; font-size: 15.5px; }
 .meal-card ol { margin: 6px 0 4px; padding-left: 22px; font-size: 15px; }
 .meal-card li { margin-bottom: 7px; }
 
@@ -206,7 +299,7 @@ input:focus, select:focus { outline: none; border-color: var(--pond); background
 }
 .nutrition .per-serving { color: var(--muted); font-weight: 600; font-size: 13px; }
 
-.health-note { font-size: 14.5px; color: #4C6B57; margin: 0 0 12px; }
+.health-note { font-size: 14.5px; color: var(--ink-soft); margin: 0 0 12px; }
 
 .meal-actions { display: flex; gap: 8px; }
 .meal-actions button {
@@ -222,10 +315,10 @@ input:focus, select:focus { outline: none; border-color: var(--pond); background
 .date-title { margin-top: 6px; }
 .froggy-says {
   background: var(--cream); border-radius: 16px; padding: 12px 14px;
-  font-weight: 700; color: #4C6B57; margin: 10px 0 0; font-size: 15.5px;
+  font-weight: 700; color: var(--ink-soft); margin: 10px 0 0; font-size: 15.5px;
 }
 .streak-chip {
-  display: inline-block; background: var(--amber-soft); color: #9A6414;
+  display: inline-block; background: var(--amber-soft); color: var(--amber-deep);
   font-weight: 800; border-radius: 999px; padding: 7px 14px; margin-top: 10px; font-size: 14.5px;
 }
 
@@ -233,16 +326,16 @@ input:focus, select:focus { outline: none; border-color: var(--pond); background
 .goal-block:last-child { margin-bottom: 0; }
 .goal-head { display: flex; justify-content: space-between; align-items: baseline; font-weight: 800; font-size: 15.5px; margin-bottom: 7px; }
 .goal-num { color: var(--muted); font-weight: 700; font-size: 14px; }
-.bar { height: 16px; background: #EFE9DA; border-radius: 999px; overflow: hidden; }
+.bar { height: 16px; background: var(--track); border-radius: 999px; overflow: hidden; }
 .fill { height: 100%; width: 0%; border-radius: 999px; transition: width 0.5s ease; }
-.fill.cal { background: linear-gradient(90deg, var(--pond), #7FBF8E); }
-.fill.pro { background: linear-gradient(90deg, var(--water), #8FCBC4); }
+.fill.cal { background: linear-gradient(90deg, var(--pond), var(--pond-light)); }
+.fill.pro { background: linear-gradient(90deg, var(--water), var(--water-light)); }
 .goal-sub { margin: 6px 0 0; font-size: 13.5px; color: var(--muted); font-weight: 600; }
 
 .droplets { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 4px; }
 .drop {
   width: 42px; height: 42px; border-radius: 50%; cursor: pointer; padding: 0;
-  border: 2.5px solid var(--water); background: #fff; font-size: 19px; line-height: 1;
+  border: 2.5px solid var(--water); background: var(--card); font-size: 19px; line-height: 1;
 }
 .drop.full { background: var(--water-soft); }
 
@@ -273,7 +366,7 @@ input:focus, select:focus { outline: none; border-color: var(--pond); background
 .tabbar {
   position: fixed; bottom: 0; left: 0; right: 0; z-index: 40;
   display: flex; justify-content: space-around; align-items: stretch;
-  background: rgba(255, 255, 255, 0.96);
+  background: var(--tabbar-bg);
   backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
   border-top: 1px solid var(--sand-deep);
   padding-bottom: env(safe-area-inset-bottom);
@@ -285,12 +378,12 @@ input:focus, select:focus { outline: none; border-color: var(--pond); background
 }
 .tabbtn .ico { font-size: 23px; line-height: 1; }
 .tabbtn span:last-child { font-size: 11.5px; font-weight: 700; }
-.tabbtn.active { color: var(--pond-deep); background: linear-gradient(180deg, transparent, rgba(92, 158, 114, 0.10)); border-radius: 16px 16px 0 0; }
+.tabbtn.active { color: var(--accent-text); background: linear-gradient(180deg, transparent, var(--active-tint)); border-radius: 16px 16px 0 0; }
 
 /* ---------- modal ---------- */
 .modal {
   position: fixed; inset: 0; z-index: 60; display: flex; align-items: flex-end; justify-content: center;
-  background: rgba(51, 65, 58, 0.45); padding: 0;
+  background: var(--scrim); padding: 0;
 }
 .modal-card {
   background: var(--card); width: 100%; max-width: 640px;

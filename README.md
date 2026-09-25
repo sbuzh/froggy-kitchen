@@ -9,7 +9,7 @@ No accounts, no backend, no build step. All data stays on your device (`localSto
 - **Cook tab** — add pantry ingredients (quick-add chips or free text), pick cuisine / servings / max cook time / dietary notes / allergies, and get 3–5 balanced, beginner-friendly meal ideas with steps, per-serving nutrition, and an honest "Uses X of your Y" match score.
 - **Today tab** — log meals ("ate this" from any card or quick-log), track calories & protein against your goals, tap water droplets, log weight (trend chart after 2+ points), see your streak.
 - **Favorites tab** — save meals you love; "cooked it" entries land in history.
-- **Settings tab** — provider + model, API key, daily calorie/protein/water goals.
+- **Settings tab** — theme (Classic / Night pond / Lagoon), provider + model, API key, daily calorie/protein/water goals.
 - **Backups** — one-tap JSON backup of all your data (pantry, log, water, weight, favorites, settings) to your phone's Downloads folder, optional auto-backup on an interval you choose (off / hourly / every 6 h / daily), and restore-from-file.
 
 Health-positive by design: balanced meals first, honest `indulgent` flagging for the occasional treat, and zero diet-shaming language anywhere.
